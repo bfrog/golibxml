@@ -4,14 +4,14 @@ import "testing"
 import "syscall"
 
 type ElementTypeTestCase struct {
-	got ElementType
+	got      ElementType
 	expected string
 }
 
-var element_type_tests[] ElementTypeTestCase = []ElementTypeTestCase{
-	{ XML_ELEMENT_NODE, "Node" },
-	{ XML_ATTRIBUTE_NODE, "Attribute" },
-	{ XML_TEXT_NODE, "Text" },
+var element_type_tests []ElementTypeTestCase = []ElementTypeTestCase{
+	{XML_ELEMENT_NODE, "Node"},
+	{XML_ATTRIBUTE_NODE, "Attribute"},
+	{XML_TEXT_NODE, "Text"},
 }
 
 func getRSS() uint64 {
@@ -50,7 +50,7 @@ func TestNewBufferLeak(t *testing.T) {
 		buffer = testNewBuffer(t)
 		buffer.Free()
 	}
-	if getRSS() > 5000 {
+	if getRSS() > 10000 {
 		t.Fatal("Memory leak")
 	}
 }
@@ -69,7 +69,7 @@ func TestNewBufferSizeLeak(t *testing.T) {
 		buffer = NewBufferSize(1024)
 		buffer.Free()
 	}
-	if getRSS() > 5000 {
+	if getRSS() > 10000 {
 		t.Fatal("Memory leak")
 	}
 }
