@@ -13,11 +13,25 @@ type writer struct {
 	err error
 }
 
+// newWriter
+func newWriter(w io.Writer) *writer {
+	return &writer{
+		w:   w,
+		err: nil,
+	}
+}
+
+// UnsafePtr to writer
+func (w *writer) UnsafePtr() unsafe.Pointer {
+	return unsafe.Pointer(w)
+}
+
 //export xmlWriteCallback
-func xmlWriteCallback(ctx unsafe.Pointer, data *C.char, dataLen C.int) C.int {
+func xmlWriteCallback(ctx unsafe.Pointer, dataPtr *C.char, dataLen C.int) C.int {
 	w := (*writer)(ctx)
 	if dataLen > 0 {
-		if n, err := w.w.Write(C.GoBytes(unsafe.Pointer(data), dataLen)); err != nil {
+		data := C.GoBytes(unsafe.Pointer(dataPtr), dataLen)
+		if n, err := w.w.Write(data); err != nil {
 			w.err = err
 			return C.int(-1)
 		} else {

@@ -63,6 +63,9 @@ var C14NError = errors.New("error encoding xml document to C14N")
 // NewC14NEncoder creates a new C14N xml document encoder that will write
 // its output to the given writer.
 func NewC14NEncoder(doc *Document, mode C14NMode, w io.Writer) *C14NEncoder {
+	if w == nil {
+		panic("writer must not be nil")
+	}
 	return &C14NEncoder{
 		doc:    doc,
 		mode:   mode,
@@ -88,8 +91,7 @@ func (enc *C14NEncoder) SetWithComments(withComments bool) {
 }
 
 func (enc *C14NEncoder) Encode() error {
-	w := &writer{enc.writer, nil}
-	wPtr := unsafe.Pointer(&w)
+	w := newWriter(enc.writer)
 	var namespacesPtr **C.xmlChar
 	if len(enc.namespaces) > 0 && enc.mode == XML_C14N_EXCLUSIVE_1_0 {
 		var cNamespaces []*C.char
@@ -110,7 +112,7 @@ func (enc *C14NEncoder) Encode() error {
 		cComments = 0
 	}
 
-	res := int(C.xmlC14NEncode(wPtr, enc.doc.Ptr, enc.nodeSet.Ptr, C.int(enc.mode), namespacesPtr, cComments))
+	res := int(C.xmlC14NEncode(w.UnsafePtr(), enc.doc.Ptr, enc.nodeSet.Ptr, C.int(enc.mode), namespacesPtr, cComments))
 	if res < 0 {
 		if w.err != nil {
 			return w.err
