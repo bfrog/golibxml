@@ -88,7 +88,8 @@ func (enc *C14NEncoder) SetWithComments(withComments bool) {
 }
 
 func (enc *C14NEncoder) Encode() error {
-	writerPtr := unsafe.Pointer(&enc.writer)
+	w := &writer{enc.writer, nil}
+	wPtr := unsafe.Pointer(&w)
 	var namespacesPtr **C.xmlChar
 	if len(enc.namespaces) > 0 && enc.mode == XML_C14N_EXCLUSIVE_1_0 {
 		var cNamespaces []*C.char
@@ -109,8 +110,11 @@ func (enc *C14NEncoder) Encode() error {
 		cComments = 0
 	}
 
-	res := int(C.xmlC14NEncode(writerPtr, enc.doc.Ptr, enc.nodeSet.Ptr, C.int(enc.mode), namespacesPtr, cComments))
+	res := int(C.xmlC14NEncode(wPtr, enc.doc.Ptr, enc.nodeSet.Ptr, C.int(enc.mode), namespacesPtr, cComments))
 	if res < 0 {
+		if w.err != nil {
+			return w.err
+		}
 		return C14NError
 	}
 	return nil
