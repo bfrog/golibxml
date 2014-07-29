@@ -565,6 +565,11 @@ func (node *Node) SetName(name string) {
 	C.xmlNodeSetName(node.Ptr, C.to_xmlcharptr(ptr))
 }
 
+// xmlSetNs
+func (node *Node) SetNs(ns *Namespace) {
+	C.xmlSetNs(node.Ptr, ns.Ptr)
+}
+
 // xmlPreviousElementSibling
 func (node *Node) PreviousSibling() *Node {
 	return makeNode(C.xmlPreviousElementSibling(node.Ptr))
@@ -628,7 +633,7 @@ func (doc *Document) SetCompressionLevel(level int) {
 }
 
 // xmlSetProp
-func (node *Node) SetAttribute(name string, value string) *Attribute {
+func (node *Node) SetProp(name string, value string) *Attribute {
 	ptrn := C.CString(name)
 	defer C.free_string(ptrn)
 	ptrv := C.CString(value)
