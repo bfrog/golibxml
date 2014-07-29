@@ -1,4 +1,4 @@
-package golibxml
+package xml
 
 func (doc *HTMLDocument) String() string {
 	buf := NewBuffer()

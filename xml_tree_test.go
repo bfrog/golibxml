@@ -1,4 +1,4 @@
-package golibxml
+package xml
 
 import "testing"
 import "syscall"
@@ -41,18 +41,8 @@ func testBufferFree(t *testing.T, buffer *Buffer) {
 }
 
 func TestNewBuffer(t *testing.T) {
-	testNewBuffer(t)
-}
-
-func TestNewBufferLeak(t *testing.T) {
-	var buffer *Buffer
-	for i := 0; i < 1000000; i++ {
-		buffer = testNewBuffer(t)
-		buffer.Free()
-	}
-	if getRSS() > 10000 {
-		t.Fatal("Memory leak")
-	}
+	buf := testNewBuffer(t)
+	testBufferFree(t, buf)
 }
 
 func TestNewBufferSize(t *testing.T) {
@@ -61,17 +51,6 @@ func TestNewBufferSize(t *testing.T) {
 		t.Fail()
 	}
 	return
-}
-
-func TestNewBufferSizeLeak(t *testing.T) {
-	var buffer *Buffer
-	for i := 0; i < 1000000; i++ {
-		buffer = NewBufferSize(1024)
-		buffer.Free()
-	}
-	if getRSS() > 10000 {
-		t.Fatal("Memory leak")
-	}
 }
 
 func TestBufferFree(t *testing.T) {

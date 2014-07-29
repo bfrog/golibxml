@@ -1,4 +1,4 @@
-package golibxml
+package xml
 
 /*
 #cgo pkg-config: libxml-2.0

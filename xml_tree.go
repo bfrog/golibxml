@@ -1,6 +1,6 @@
 //
-// Package golibxml is a simple wrapper for libxml2.
-package golibxml
+// Package xml is a simple wrapper for libxml2.
+package xml
 
 /*
 #cgo pkg-config: libxml-2.0

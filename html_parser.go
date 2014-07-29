@@ -1,7 +1,6 @@
-package golibxml
+package xml
 
 /*
-#cgo pkg-config: libxml-2.0
 #include <libxml/HTMLparser.h>
 
 static inline void free_string(char* s) { free(s); }
