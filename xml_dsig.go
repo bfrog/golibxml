@@ -3,27 +3,30 @@
 package xml
 
 /*
-#include <libxml/tree.h>
-#include <libxslt/xslt.h>
-#include <libxslt/security.h>
-
-#include <xmlsec/xmlsec.h>
-#include <xmlsec/xmltree.h>
-#include <xmlsec/xmldsig.h>
-#include <xmlsec/templates.h>
-#include <xmlsec/crypto.h>
-
-inline int
-xmlSign(xmlNodePtr node, char* keyname, char* key, size_t keyLen, char* cert, size_t certLen)
-{
-	return 0;
-}
-
-inline int
-xmlVerify(xmlNodePtr node, char* cert, size_t certLen)
-{
-	return 0;
-}
-
+#include <stdlib.h>
+#include "xml.h"
 */
 import "C"
+
+import (
+	"errors"
+	"unsafe"
+)
+
+// Digitally sign a node in a document using the key and cert binary data
+func DigitallySign(doc *Document, node *Node, keyName string, key []byte, cert []byte) error {
+	keyNameCStr := C.CString(keyName)
+	defer C.free(unsafe.Pointer(keyNameCStr))
+	keyPtr := unsafe.Pointer(&key[0])
+	keyLen := (C.size_t)(len(key))
+	certPtr := unsafe.Pointer(&cert[0])
+	certLen := (C.size_t)(len(cert))
+	res := C.xmlSign(doc.Ptr, node.Ptr, keyNameCStr, keyPtr, keyLen, certPtr, certLen)
+
+	if int(res) != 0 {
+		return errors.New("error digitally signing xml")
+	}
+	return nil
+}
+
+// DigitallyVerify a signed node in a document using a given cert
