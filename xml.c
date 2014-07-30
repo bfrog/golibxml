@@ -52,6 +52,35 @@ int init()
 
 }
 
+int xmlEncode(void *ctx, xmlNodePtr node, char* encoding, int options) 
+{
+    int ret = -1;
+    xmlSaveCtxtPtr savectx = NULL;
+    savectx = xmlSaveToIO((xmlOutputWriteCallback)xmlWriteCallback,
+            NULL,
+            ctx,
+            encoding,
+            options);
+    ret = xmlSaveTree(savectx, node);
+    return ret;
+}
+
+
+int xmlC14NEncode(void *ctx, xmlDocPtr doc, xmlNodeSetPtr nodes, int mode,
+        xmlChar** inclusive_ns_prefixes, int with_comments)
+{
+    xmlOutputBufferPtr output = xmlAllocOutputBuffer(NULL);
+    if (output == NULL) {
+        return -1;
+    }
+    output->context = ctx;
+    output->writecallback = (xmlOutputWriteCallback)xmlWriteCallback;
+    int ret = xmlC14NDocSaveTo(doc, nodes, mode, inclusive_ns_prefixes,
+            with_comments, output);
+    xmlOutputBufferClose(output);
+    return ret;
+}
+
 int xmlSign(xmlDocPtr doc, xmlNodePtr node, char *keyName, void *key, size_t keyLen, void *cert, size_t certLen)
 {
     xmlNodePtr signNode = NULL;
@@ -105,14 +134,14 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, char *keyName, void *key, size_t key
     }
 
     /* load private key, assuming that there is not password */
-    dsigCtx->signKey = xmlSecCryptoAppKeyLoadMemory(key, keyLen, xmlSecKeyDataFormatBinary, NULL, NULL, NULL);
+    dsigCtx->signKey = xmlSecCryptoAppKeyLoadMemory(key, keyLen, xmlSecKeyDataFormatPem, NULL, NULL, NULL);
     if(dsigCtx->signKey == NULL) {
         fprintf(stderr,"Error: failed to load private binary key from\n");
         goto done;
     }
 
     /* load certificate and add to the key */
-    if(xmlSecCryptoAppKeyCertLoadMemory(dsigCtx->signKey, cert, certLen, xmlSecKeyDataFormatBinary) < 0) {
+    if(xmlSecCryptoAppKeyCertLoadMemory(dsigCtx->signKey, cert, certLen, xmlSecKeyDataFormatCertPem) < 0) {
         fprintf(stderr,"Error: failed to load binary certificate\n");
         goto done;
     }
@@ -137,7 +166,7 @@ done:
     return 0;
 }
 
-int xmlVerify(xmlNodePtr node, char* keyName, void* key, size_t keyLen)
+int xmlVerify(xmlNodePtr node, char* keyName, void* cert, size_t certLen)
 {
     xmlNodePtr dsigNode = NULL;
     xmlSecDSigCtxPtr dsigCtx = NULL;
@@ -158,9 +187,15 @@ int xmlVerify(xmlNodePtr node, char* keyName, void* key, size_t keyLen)
         goto done;
     }
 
-    /* load public key (x509 cert) from memory */
-    dsigCtx->signKey = xmlSecCryptoAppKeyLoadMemory(key, keyLen, xmlSecKeyDataFormatBinary, NULL, NULL, NULL);
+    /* create key */
+    dsigCtx->signKey = xmlSecKeyCreate();
     if(dsigCtx->signKey == NULL) {
+        fprintf(stderr, "Error: failed to create key\n");
+        goto done;
+    }
+
+    /* load public key (x509 cert) from memory */
+    if(xmlSecCryptoAppKeyCertLoadMemory(dsigCtx->signKey, cert, certLen, xmlSecKeyDataFormatCertPem) < 0 ) {
         fprintf(stderr,"Error: failed to load public pem key\n");
         goto done;
     }
@@ -186,7 +221,7 @@ int xmlVerify(xmlNodePtr node, char* keyName, void* key, size_t keyLen)
         res = 0;
     }    
 
-done:    
+done:
     /* cleanup */
     if(dsigCtx != NULL) {
         xmlSecDSigCtxDestroy(dsigCtx);

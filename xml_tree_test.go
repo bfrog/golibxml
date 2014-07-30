@@ -131,7 +131,7 @@ func TestBufferContent(t *testing.T) {
 func TestNewDoc(t *testing.T) {
 	doc := NewDoc("1.0")
 	defer doc.Free()
-	result := doc.String()
+	result := doc.StringDump()
 	if result != "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" {
 		t.Fail()
 	}
@@ -142,7 +142,7 @@ func TestNewNode(t *testing.T) {
 	defer doc.Free()
 	node := NewNode(nil, "div")
 	doc.AddChild(node)
-	result := node.String()
+	result := node.StringDump()
 	if result != "<div/>" {
 		t.Fail()
 	}
@@ -164,7 +164,7 @@ func TestNewComment(t *testing.T) {
 	defer doc.Free()
 	comment := doc.NewComment("this is a comment")
 	doc.AddChild(comment)
-	result := comment.String()
+	result := comment.StringDump()
 	if result != "<!--this is a comment-->" {
 		t.Fail()
 	}

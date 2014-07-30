@@ -13,7 +13,7 @@ import (
 	"unsafe"
 )
 
-// Digitally sign a node in a document using the key and cert binary data
+// Digitally sign a node in a document using the key and cert pem encoded data
 func DigitallySign(doc *Document, node *Node, keyName string, key []byte, cert []byte) error {
 	keyNameCStr := C.CString(keyName)
 	defer C.free(unsafe.Pointer(keyNameCStr))
@@ -29,7 +29,7 @@ func DigitallySign(doc *Document, node *Node, keyName string, key []byte, cert [
 	return nil
 }
 
-// DigitallyVerify a signed node in a document using a given public key
+// DigitallyVerify a signed node in a document using a given pem encoded cert data
 func VerifySignature(node *Node, keyName string, key []byte) (bool, error) {
 	keyNameCStr := C.CString(keyName)
 	defer C.free(unsafe.Pointer(keyNameCStr))

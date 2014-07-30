@@ -12,7 +12,11 @@ static inline xmlChar *to_xmlcharptr(const char *s) { return (xmlChar *)s; }
 static inline char *to_charptr(const xmlChar *s) { return (char *)s; }
 */
 import "C"
-import "unsafe"
+
+import (
+	"bytes"
+	"unsafe"
+)
 
 ////////////////////////////////////////////////////////////////////////////////
 // TYPES/STRUCTS
@@ -536,6 +540,15 @@ func (node *Node) GetContent() string {
 	content := C.to_charptr(C.xmlNodeGetContent(node.Ptr))
 	defer C.free_string(content)
 	return C.GoString(content)
+}
+
+func (node *Node) String() string {
+	var buf bytes.Buffer
+	enc := NewEncoder(node, &buf, 0)
+	if err := enc.Encode(); err != nil {
+		panic(err)
+	}
+	return buf.String()
 }
 
 // xmlNodeListGetString

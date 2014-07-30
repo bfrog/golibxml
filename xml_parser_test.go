@@ -32,7 +32,7 @@ func TestParseDoc(t *testing.T) {
 		t.Fail()
 	}
 	defer doc.Free()
-	compareResult(t, doc.String(), TEST_XML_EXPECTED)
+	compareResult(t, doc.StringDump(), TEST_XML_EXPECTED)
 }
 
 func TestParseEntity(t *testing.T) {
@@ -41,7 +41,7 @@ func TestParseEntity(t *testing.T) {
 		t.Fail()
 	}
 	defer doc.Free()
-	compareResult(t, doc.String(), TEST_XML_EXPECTED)
+	compareResult(t, doc.StringDump(), TEST_XML_EXPECTED)
 }
 
 func TestParseFile(t *testing.T) {
@@ -50,7 +50,7 @@ func TestParseFile(t *testing.T) {
 		t.Fail()
 	}
 	defer doc.Free()
-	compareResult(t, doc.String(), TEST_XML_EXPECTED)
+	compareResult(t, doc.StringDump(), TEST_XML_EXPECTED)
 }
 
 func TestParseMemory(t *testing.T) {
@@ -63,7 +63,7 @@ func TestParseMemory(t *testing.T) {
 		t.Fail()
 	}
 	defer doc.Free()
-	compareResult(t, doc.String(), TEST_XML_EXPECTED)
+	compareResult(t, doc.StringDump(), TEST_XML_EXPECTED)
 }
 
 func TestReadDoc(t *testing.T) {
@@ -72,7 +72,7 @@ func TestReadDoc(t *testing.T) {
 		t.Fail()
 	}
 	defer doc.Free()
-	compareResult(t, doc.String(), TEST_XML_EXPECTED)
+	compareResult(t, doc.StringDump(), TEST_XML_EXPECTED)
 }
 
 func TestReadFile(t *testing.T) {
@@ -81,7 +81,7 @@ func TestReadFile(t *testing.T) {
 		t.Fail()
 	}
 	defer doc.Free()
-	compareResult(t, doc.String(), TEST_XML_EXPECTED)
+	compareResult(t, doc.StringDump(), TEST_XML_EXPECTED)
 }
 
 func TestReadMemory(t *testing.T) {
@@ -94,7 +94,7 @@ func TestReadMemory(t *testing.T) {
 		t.Fail()
 	}
 	defer doc.Free()
-	compareResult(t, doc.String(), TEST_XML_EXPECTED)
+	compareResult(t, doc.StringDump(), TEST_XML_EXPECTED)
 }
 
 func TestRecoverDoc(t *testing.T) {
@@ -103,7 +103,7 @@ func TestRecoverDoc(t *testing.T) {
 		t.Fatal(err)
 	}
 	doc := RecoverDoc(string(buf))
-	compareResult(t, doc.String(), TEST_XML_EXPECTED)
+	compareResult(t, doc.StringDump(), TEST_XML_EXPECTED)
 }
 
 func TestRecoverFile(t *testing.T) {
@@ -111,7 +111,7 @@ func TestRecoverFile(t *testing.T) {
 	if doc == nil {
 		t.Fail()
 	}
-	compareResult(t, doc.String(), TEST_XML_EXPECTED)
+	compareResult(t, doc.StringDump(), TEST_XML_EXPECTED)
 }
 
 func TestRecoverMemory(t *testing.T) {
@@ -120,7 +120,7 @@ func TestRecoverMemory(t *testing.T) {
 		t.Fatal(err)
 	}
 	doc := RecoverMemory(buf)
-	compareResult(t, doc.String(), TEST_XML_EXPECTED)
+	compareResult(t, doc.StringDump(), TEST_XML_EXPECTED)
 }
 
 func TestSubstituteEntitiesDefault(t *testing.T) {

@@ -3,28 +3,7 @@
 package xml
 
 /*
-#cgo pkg-config: libxml-2.0
-#include <libxml/tree.h>
-#include <libxml/c14n.h>
-
-int xmlWriteCallback(void *ctx, char* data, int dataLen);
-
-inline int
-xmlC14NEncode(void *ctx, xmlDocPtr doc, xmlNodeSetPtr nodes, int mode,
-	xmlChar** inclusive_ns_prefixes, int with_comments)
-{
-	xmlOutputBufferPtr output = xmlAllocOutputBuffer(NULL);
-	if (output == NULL) {
-		return -1;
-	}
-	output->context = ctx;
-	output->writecallback = (xmlOutputWriteCallback)xmlWriteCallback;
-	int ret = xmlC14NDocSaveTo(doc, nodes, mode, inclusive_ns_prefixes,
-		with_comments, output);
-	xmlOutputBufferClose(output);
-	return ret;
-}
-
+#include "xml.h"
 */
 import "C"
 

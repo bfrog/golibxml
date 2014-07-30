@@ -11,7 +11,7 @@ static inline char *to_charptr(const xmlChar *s) { return (char *)s; }
 import "C"
 import "unsafe"
 
-func (doc *Document) String() string {
+func (doc *Document) StringDump() string {
 	buf := NewBuffer()
 	defer buf.Free()
 	doc.NodeDump(buf, doc.Node, 0, 0)
@@ -22,7 +22,7 @@ func (node *Node) Document() *Document {
 	return makeDoc(_Ctype_xmlDocPtr(unsafe.Pointer(node.Ptr.doc)))
 }
 
-func (node *Node) String() string {
+func (node *Node) StringDump() string {
 	buf := NewBuffer()
 	defer buf.Free()
 	node.Document().NodeDump(buf, node, 0, 0)
@@ -86,14 +86,13 @@ func (elem ElementType) GoString() string {
 }
 
 func (elem ElementType) String() string {
-	switch (elem) {
-		case XML_ELEMENT_NODE:
-			return "Node"
-		case XML_ATTRIBUTE_NODE:
-			return "Attribute"
-		case XML_TEXT_NODE:
-			return "Text"
+	switch elem {
+	case XML_ELEMENT_NODE:
+		return "Node"
+	case XML_ATTRIBUTE_NODE:
+		return "Attribute"
+	case XML_TEXT_NODE:
+		return "Text"
 	}
 	return "Unknown Type"
 }
-
