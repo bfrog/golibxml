@@ -38,7 +38,7 @@ func VerifySignature(node *Node, keyName string, key []byte) (bool, error) {
 	res := int(C.xmlVerify(node.Ptr, keyNameCStr, keyPtr, keyLen))
 
 	if res < 0 {
-		return false, errors.New("error digitally signing xml")
+		return false, errors.New("error verifying digitally signing xml")
 	} else if res == 1 {
 		return true, nil
 	}

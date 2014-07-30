@@ -49,7 +49,6 @@ int init()
         fprintf(stderr, "Error: xmlsec-crypto initialization failed.\n");
         return(-1);
     }
-
 }
 
 int xmlEncode(void *ctx, xmlNodePtr node, char* encoding, int options) 
@@ -168,11 +167,28 @@ done:
 
 int xmlVerify(xmlNodePtr node, char* keyName, void* cert, size_t certLen)
 {
+	xmlSecKeysMngrPtr mngr = NULL;
     xmlNodePtr dsigNode = NULL;
     xmlSecDSigCtxPtr dsigCtx = NULL;
     int res = -1;
 
-    /* load file */
+    /* create keys manager and load keys */
+    mngr = xmlSecKeysMngrCreate();
+    if(mngr == NULL) {
+        fprintf(stderr, "Error: could not create key manager\n");
+        goto done;
+    }
+    if(xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
+        fprintf(stderr, "Error: could not initialize key manager\n");
+        goto done;
+    }
+
+    /* load trusted cert from memory */
+    if(xmlSecCryptoAppKeysMngrCertLoadMemory(mngr, cert, certLen, xmlSecKeyDataFormatCertPem, xmlSecKeyDataTypeTrusted) < 0) {
+        fprintf(stderr, "Error: could not load cert\n");
+        goto done;
+    }
+
     /* find start node */
     dsigNode = xmlSecFindNode(node, xmlSecNodeSignature, xmlSecDSigNs);
     if(node == NULL) {
@@ -181,28 +197,9 @@ int xmlVerify(xmlNodePtr node, char* keyName, void* cert, size_t certLen)
     }
 
     /* create signature context */
-    dsigCtx = xmlSecDSigCtxCreate(NULL);
+    dsigCtx = xmlSecDSigCtxCreate(mngr);
     if(dsigCtx == NULL) {
         fprintf(stderr,"Error: failed to create signature context\n");
-        goto done;
-    }
-
-    /* create key */
-    dsigCtx->signKey = xmlSecKeyCreate();
-    if(dsigCtx->signKey == NULL) {
-        fprintf(stderr, "Error: failed to create key\n");
-        goto done;
-    }
-
-    /* load public key (x509 cert) from memory */
-    if(xmlSecCryptoAppKeyCertLoadMemory(dsigCtx->signKey, cert, certLen, xmlSecKeyDataFormatCertPem) < 0 ) {
-        fprintf(stderr,"Error: failed to load public pem key\n");
-        goto done;
-    }
-
-    /* set key name to the file name, this is just an example! */
-    if(xmlSecKeySetName(dsigCtx->signKey, keyName) < 0) {
-        fprintf(stderr,"Error: failed to set key name for key\n");
         goto done;
     }
 
@@ -223,8 +220,12 @@ int xmlVerify(xmlNodePtr node, char* keyName, void* cert, size_t certLen)
 
 done:
     /* cleanup */
+
     if(dsigCtx != NULL) {
         xmlSecDSigCtxDestroy(dsigCtx);
+    }
+    if(mngr != NULL) {
+        xmlSecKeysMngrDestroy(mngr);
     }
 
     return(res);
