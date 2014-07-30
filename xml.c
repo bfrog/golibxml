@@ -184,7 +184,7 @@ int xmlVerify(xmlNodePtr node, char* keyName, void* cert, size_t certLen)
     }
 
     /* load trusted cert from memory */
-    if(xmlSecCryptoAppKeysMngrCertLoadMemory(mngr, cert, certLen, xmlSecKeyDataFormatCertPem, xmlSecKeyDataTypeTrusted) < 0) {
+    if(xmlSecCryptoAppKeysMngrCertLoadMemory(mngr, cert, certLen, xmlSecKeyDataFormatCertPem, xmlSecKeyDataTypeNone) < 0) {
         fprintf(stderr, "Error: could not load cert\n");
         goto done;
     }
@@ -197,9 +197,16 @@ int xmlVerify(xmlNodePtr node, char* keyName, void* cert, size_t certLen)
     }
 
     /* create signature context */
-    dsigCtx = xmlSecDSigCtxCreate(mngr);
+    dsigCtx = xmlSecDSigCtxCreate(NULL);
     if(dsigCtx == NULL) {
         fprintf(stderr,"Error: failed to create signature context\n");
+        goto done;
+    }
+
+    /* load private key, assuming that there is not password */
+    dsigCtx->signKey = xmlSecCryptoAppKeyLoadMemory(cert, certLen, xmlSecKeyDataFormatCertPem, NULL, NULL, NULL);
+    if(dsigCtx->signKey == NULL) {
+        fprintf(stderr,"Error: failed to load private binary key from\n");
         goto done;
     }
 

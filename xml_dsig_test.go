@@ -12,8 +12,7 @@ import (
 )
 
 func TestDigitalSignature(t *testing.T) {
-	keyName := "magic"
-	commonName := "Johnny"
+	name := "Johnny"
 	privKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		t.Fatal(err)
@@ -22,11 +21,12 @@ func TestDigitalSignature(t *testing.T) {
 	now := time.Now()
 
 	certTmpl := x509.Certificate{
-		SerialNumber: new(big.Int).SetInt64(0),
+		SerialNumber: new(big.Int).SetInt64(1),
 		Subject: pkix.Name{
-			CommonName:   commonName,
+			CommonName:   name,
 			Organization: []string{"Acme Co"},
 		},
+		IsCA:         true,
 		NotBefore:    now.Add(-5 * time.Minute).UTC(),
 		NotAfter:     now.AddDate(1, 0, 0).UTC(),
 		SubjectKeyId: []byte{1, 2, 3, 4},
@@ -43,6 +43,7 @@ func TestDigitalSignature(t *testing.T) {
 			Bytes: certBytes,
 		},
 	)
+	t.Logf("certPem %s", string(certPem))
 	privPem := pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "RSA PRIVATE KEY",
@@ -54,10 +55,10 @@ func TestDigitalSignature(t *testing.T) {
 	node := NewNode(nil, "blackbox")
 	node.SetContent("magic")
 	doc.AddChild(node)
-	if err := DigitallySign(doc, node, keyName, privPem, certPem); err != nil {
+	if err := DigitallySign(doc, node, name, privPem, certPem); err != nil {
 		t.Fatalf("xml %s could not be signed, err: %s", node.StringDump(), err)
 	}
-	if signed, err := VerifySignature(node, keyName, certPem); err != nil {
+	if signed, err := VerifySignature(node, name, certPem); err != nil {
 		t.Fatalf("xml %s could not be verified, err: %s", node.StringDump(), err)
 	} else if !signed {
 		t.Errorf("expected verify to be true")

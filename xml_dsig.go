@@ -13,6 +13,16 @@ import (
 	"unsafe"
 )
 
+/* TODO add wrappers for these and provide methods instead of plain functions
+type KeysManager struct {
+	Ptr C.xmlSecKeysMngrPtr
+}
+
+type DigitalSignature struct {
+	Ptr C.xmlSecDSigCtxPtr
+}
+*/
+
 // Digitally sign a node in a document using the key and cert pem encoded data
 func DigitallySign(doc *Document, node *Node, keyName string, key []byte, cert []byte) error {
 	keyNameCStr := C.CString(keyName)
