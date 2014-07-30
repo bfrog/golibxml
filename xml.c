@@ -1,7 +1,6 @@
 #include "xml.h"
 	
-int
-init()
+int init()
 {
     /* Init libxml and libxslt libraries */
     xmlInitParser();
@@ -28,7 +27,7 @@ init()
      * loading for xmlsec-crypto libraries. Use the crypto library
      * name ("openssl", "nss", etc.) to load corresponding 
      * xmlsec-crypto library.
-	 * TODO use XMLSEC_CRYPTO define when its fixed to work with go build
+     * TODO use XMLSEC_CRYPTO define when its fixed to work with go build
      */
 #ifdef XMLSEC_CRYPTO_DYNAMIC_LOADING
     if(xmlSecCryptoDLLoadLibrary("openssl") < 0) {
@@ -138,10 +137,62 @@ done:
     return 0;
 }
 
-int
-xml_verify(xmlNodePtr node, char* cert, size_t certLen)
+int xmlVerify(xmlNodePtr node, char* keyName, void* key, size_t keyLen)
 {
-	return 0;
+    xmlNodePtr dsigNode = NULL;
+    xmlSecDSigCtxPtr dsigCtx = NULL;
+    int res = -1;
+
+    /* load file */
+    /* find start node */
+    dsigNode = xmlSecFindNode(node, xmlSecNodeSignature, xmlSecDSigNs);
+    if(node == NULL) {
+        fprintf(stderr, "Error: start node not found\n");
+        goto done;      
+    }
+
+    /* create signature context */
+    dsigCtx = xmlSecDSigCtxCreate(NULL);
+    if(dsigCtx == NULL) {
+        fprintf(stderr,"Error: failed to create signature context\n");
+        goto done;
+    }
+
+    /* load public key (x509 cert) from memory */
+    dsigCtx->signKey = xmlSecCryptoAppKeyLoadMemory(key, keyLen, xmlSecKeyDataFormatBinary, NULL, NULL, NULL);
+    if(dsigCtx->signKey == NULL) {
+        fprintf(stderr,"Error: failed to load public pem key\n");
+        goto done;
+    }
+
+    /* set key name to the file name, this is just an example! */
+    if(xmlSecKeySetName(dsigCtx->signKey, keyName) < 0) {
+        fprintf(stderr,"Error: failed to set key name for key\n");
+        goto done;
+    }
+
+    /* Verify signature */
+    if(xmlSecDSigCtxVerify(dsigCtx, dsigNode) < 0) {
+        fprintf(stderr,"Error: signature verify\n");
+        goto done;
+    }
+
+    /* print verification result to stdout */
+    if(dsigCtx->status == xmlSecDSigStatusSucceeded) {
+        fprintf(stdout, "Signature is OK\n");
+        res = 1;
+    } else {
+        fprintf(stdout, "Signature is INVALID\n");
+        res = 0;
+    }    
+
+done:    
+    /* cleanup */
+    if(dsigCtx != NULL) {
+        xmlSecDSigCtxDestroy(dsigCtx);
+    }
+
+    return(res);
 }
 
 

@@ -29,4 +29,18 @@ func DigitallySign(doc *Document, node *Node, keyName string, key []byte, cert [
 	return nil
 }
 
-// DigitallyVerify a signed node in a document using a given cert
+// DigitallyVerify a signed node in a document using a given public key
+func VerifySignature(node *Node, keyName string, key []byte) (bool, error) {
+	keyNameCStr := C.CString(keyName)
+	defer C.free(unsafe.Pointer(keyNameCStr))
+	keyPtr := unsafe.Pointer(&key[0])
+	keyLen := (C.size_t)(len(key))
+	res := int(C.xmlVerify(node.Ptr, keyNameCStr, keyPtr, keyLen))
+
+	if res < 0 {
+		return false, errors.New("error digitally signing xml")
+	} else if res == 1 {
+		return true, nil
+	}
+	return false, nil
+}

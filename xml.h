@@ -17,6 +17,6 @@ int init();
 
 int xmlSign(xmlDocPtr doc, xmlNodePtr node, char *keyName, void *key, size_t keyLen, void *cert, size_t certLen);
 
+int xmlVerify(xmlNodePtr node, char *keyName, void* key, size_t keyLen);
+
 #endif
-
-
