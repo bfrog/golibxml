@@ -1,6 +1,6 @@
 # XML Library for Go
 
-[![Build Status](https://secure.travis-ci.org/bfrog/xml.png)](http://travis-ci.org/jbussdieker/golibxml)
+[![Build Status](https://secure.travis-ci.org/bfrog/xml.png)](http://travis-ci.org/bfrog/xml)
 
 XML is a simple wrapper for libxml, libxslt, and xmlsec for Go
 
