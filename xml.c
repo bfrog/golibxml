@@ -58,9 +58,12 @@ int xmlEncode(void *ctx, xmlNodePtr node, char* encoding, int options)
     savectx = xmlSaveToIO((xmlOutputWriteCallback)xmlWriteCallback,
             NULL,
             ctx,
-            encoding,
+            "UTF-8",
             options);
-    ret = xmlSaveTree(savectx, node);
+    if(savectx != NULL) {
+        ret = xmlSaveTree(savectx, node);
+    }
+    ret = xmlSaveClose(savectx);
     return ret;
 }
 
