@@ -45,7 +45,7 @@ func NewEncoder(node *Node, writer io.Writer, opts EncodingOption) *Encoder {
 func (enc *Encoder) Encode() error {
 	w := newWriter(enc.writer)
 	res := C.xmlEncode(w.UnsafePtr(), enc.node.Ptr, (*C.char)(unsafe.Pointer(nil)), C.int(enc.options))
-	if res != 0 {
+	if res < 0 {
 		if w.err != nil {
 			return w.err
 		}

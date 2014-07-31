@@ -1,4 +1,7 @@
 language: go
 go: 1.1
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install libxmlsec1 libxmlsec1-dev
 script:
  - go test -v
