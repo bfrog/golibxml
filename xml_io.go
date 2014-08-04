@@ -31,8 +31,8 @@ func (w *ioWriter) UnsafePtr() unsafe.Pointer {
 func xmlWriteCallback(ctx unsafe.Pointer, dataPtr *C.char, dataLen C.int) C.int {
 	w := (*ioWriter)(ctx)
 	if dataLen > 0 {
-		data := C.GoBytes(unsafe.Pointer(dataPtr), dataLen)
-		if n, err := w.w.Write(data); err != nil {
+		bytes := *(*[]byte)(unsafe.Pointer(&reflect.SliceHeader{Len: int(dataLen), Cap: int(dataLen), Data: uintptr(unsafe.Pointer(dataPtr))}))
+		if n, err := w.w.Write(bytes); err != nil {
 			w.err = err
 			return C.int(-1)
 		} else {
