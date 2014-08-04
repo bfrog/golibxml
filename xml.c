@@ -67,10 +67,12 @@ int xmlEncode(void *ctx, xmlNodePtr node, char* encoding, int options)
     return ret;
 }
 
-int xmlDecode(void *ctx, char* encoding, int options, xmlDoc** doc) 
+xmlDocPtr xmlDecode(void *ctx, char* encoding, int options) 
 {
-    int ret = -1;
-    return ret;
+    xmlDocPtr doc = NULL;
+	doc = xmlReadIO((xmlInputReadCallback)xmlReadCallback,
+			NULL, ctx, NULL, encoding, options);
+    return doc;
 }
 
 int xmlC14NEncode(void *ctx, xmlDocPtr doc, xmlNodeSetPtr nodes, int mode,
