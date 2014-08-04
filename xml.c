@@ -67,6 +67,11 @@ int xmlEncode(void *ctx, xmlNodePtr node, char* encoding, int options)
     return ret;
 }
 
+int xmlDecode(void *ctx, char* encoding, int options, xmlDoc** doc) 
+{
+    int ret = -1;
+    return ret;
+}
 
 int xmlC14NEncode(void *ctx, xmlDocPtr doc, xmlNodeSetPtr nodes, int mode,
         xmlChar** inclusive_ns_prefixes, int with_comments)
