@@ -64,32 +64,6 @@ const (
 	XML_BUFFER_ALLOC_IO                         = 4 //: special allocation scheme used for I/O
 )
 
-type ElementType int
-
-const (
-	XML_ELEMENT_NODE       ElementType = 1
-	XML_ATTRIBUTE_NODE                 = 2
-	XML_TEXT_NODE                      = 3
-	XML_CDATA_SECTION_NODE             = 4
-	XML_ENTITY_REF_NODE                = 5
-	XML_ENTITY_NODE                    = 6
-	XML_PI_NODE                        = 7
-	XML_COMMENT_NODE                   = 8
-	XML_DOCUMENT_NODE                  = 9
-	XML_DOCUMENT_TYPE_NODE             = 10
-	XML_DOCUMENT_FRAG_NODE             = 11
-	XML_NOTATION_NODE                  = 12
-	XML_HTML_DOCUMENT_NODE             = 13
-	XML_DTD_NODE                       = 14
-	XML_ELEMENT_DECL                   = 15
-	XML_ATTRIBUTE_DECL                 = 16
-	XML_ENTITY_DECL                    = 17
-	XML_NAMESPACE_DECL                 = 18
-	XML_XINCLUDE_START                 = 19
-	XML_XINCLUDE_END                   = 20
-	XML_DOCB_DOCUMENT_NODE             = 21
-)
-
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,31 +116,6 @@ func makeAttribute(attr C.xmlAttrPtr) *Attribute {
 ////////////////////////////////////////////////////////////////////////////////
 // INTERFACE
 ////////////////////////////////////////////////////////////////////////////////
-
-// xmlAddChild
-func (parent *Node) AddChild(cur *Node) *Node {
-	return makeNode(C.xmlAddChild(parent.Ptr, cur.Ptr))
-}
-
-// xmlAddChildList
-func (parent *Node) AddChildList(cur Node) *Node {
-	return makeNode(C.xmlAddNextSibling(parent.Ptr, cur.Ptr))
-}
-
-// xmlAddNextSibling
-func (cur *Node) AddNextSibling(elem Node) *Node {
-	return makeNode(C.xmlAddNextSibling(cur.Ptr, elem.Ptr))
-}
-
-// xmlAddPrevSibling
-func (cur *Node) AddPrevSibling(elem Node) *Node {
-	return makeNode(C.xmlAddPrevSibling(cur.Ptr, elem.Ptr))
-}
-
-// xmlAddSibling
-func (cur *Node) AddSibling(elem Node) *Node {
-	return makeNode(C.xmlAddSibling(cur.Ptr, elem.Ptr))
-}
 
 // xmlBufferAdd
 func (buffer *Buffer) Add(str []byte) int {
@@ -542,15 +491,6 @@ func (node *Node) GetContent() string {
 	return C.GoString(content)
 }
 
-func (node *Node) String() string {
-	var buf bytes.Buffer
-	enc := NewEncoder(node, &buf, 0)
-	if err := enc.Encode(); err != nil {
-		panic(err)
-	}
-	return buf.String()
-}
-
 // xmlNodeListGetString
 func (node *Node) ListGetString(inLine bool) string {
 	ptr := node.Ptr
@@ -576,11 +516,6 @@ func (node *Node) SetName(name string) {
 	ptr := C.CString(name)
 	defer C.free_string(ptr)
 	C.xmlNodeSetName(node.Ptr, C.to_xmlcharptr(ptr))
-}
-
-// xmlSetNs
-func (node *Node) SetNs(ns *Namespace) {
-	C.xmlSetNs(node.Ptr, ns.Ptr)
 }
 
 // xmlPreviousElementSibling

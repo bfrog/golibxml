@@ -13,6 +13,12 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
+// inline go/cstr/xmlChar helpers
+static inline void free_string(char* s) { free(s); }
+static inline void free_xmlstring(xmlChar* s) { free(s); }
+static inline xmlChar *to_xmlcharptr(const char *s) { return (xmlChar *)s; }
+static inline char *to_charptr(const xmlChar *s) { return (char *)s; }
+
 // initialize the xml and cryptographic libraries
 int init();
 
