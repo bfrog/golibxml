@@ -655,6 +655,18 @@ func (node *Node) SetProp(name string, value string) *Attribute {
 	return makeAttribute(cattr)
 }
 
+// xmlGetProp
+func (node *Node) GetProp(name string) string {
+	ptrn := C.CString(name)
+	defer C.free_string(ptrn)
+	cattr := C.to_charptr(C.xmlGetProp(node.Ptr, C.to_xmlcharptr(ptrn)))
+	if cattr == nil {
+		return ""
+	}
+	defer C.free_string(cattr)
+	return C.GoString(cattr)
+}
+
 // xmlTextConcat
 func (node *TextNode) Concat(content string) int {
 	ptr := C.CString(content)
