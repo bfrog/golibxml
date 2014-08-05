@@ -1,7 +1,7 @@
 package xml
 
 /*
-#include xml.h
+#include "xml.h"
 */
 import "C"
 
