@@ -571,6 +571,18 @@ func (node *Node) SetContent(content string) {
 	C.xmlNodeSetContent(node.Ptr, C.to_xmlcharptr(ptr))
 }
 
+// Add ID
+func (doc *Document) AddID(name string, attr *Attribute) {
+	var validPtr C.xmlValidCtxtPtr
+	cName := C.CString(name)
+	defer C.free_string(cName)
+	var attrPtr C.xmlAttrPtr
+	if attr != nil {
+		attrPtr = attr.Ptr
+	}
+	C.xmlAddID(validPtr, doc.Ptr, C.to_xmlcharptr(cName), attrPtr)
+}
+
 // xmlNodeSetName
 func (node *Node) SetName(name string) {
 	ptr := C.CString(name)
@@ -665,6 +677,13 @@ func (node *Node) GetProp(name string) string {
 	}
 	defer C.free_string(cattr)
 	return C.GoString(cattr)
+}
+
+// xmlHasProp
+func (node *Node) HasProp(name string) *Attribute {
+	ptrn := C.CString(name)
+	defer C.free_string(ptrn)
+	return makeAttribute(C.xmlHasProp(node.Ptr, C.to_xmlcharptr(ptrn)))
 }
 
 // xmlTextConcat
