@@ -63,4 +63,16 @@ func TestDigitalSignature(t *testing.T) {
 	} else if !signed {
 		t.Errorf("expected verify to be true")
 	}
+
+	if signed, err := VerifySignature(nil, name, certPem); err != nil {
+		t.Fatalf("xml nil node could not be verified, err: %s", err)
+	} else if signed {
+		t.Errorf("expected verify to be false for nil node")
+	}
+	node.Ptr = nil
+	if signed, err := VerifySignature(node, name, certPem); err != nil {
+		t.Fatalf("xml node with nil ptr could not be verified, err: %s", err)
+	} else if signed {
+		t.Errorf("expected verify to be false for node with nil ptr")
+	}
 }

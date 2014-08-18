@@ -41,6 +41,9 @@ func DigitallySign(doc *Document, node *Node, keyName string, key []byte, cert [
 
 // DigitallyVerify a signed node in a document using a given pem encoded cert data
 func VerifySignature(node *Node, keyName string, key []byte) (bool, error) {
+	if node == nil || node.Ptr == nil {
+		return false, nil
+	}
 	keyNameCStr := C.CString(keyName)
 	defer C.free(unsafe.Pointer(keyNameCStr))
 	keyPtr := unsafe.Pointer(&key[0])
