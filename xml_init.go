@@ -7,9 +7,12 @@ package xml
 #include "xml.h"
 */
 import "C"
+import "fmt"
 
 func init() {
-	if int(C.init()) != 0 {
+	result := int(C.init())
+	fmt.Println("xml init result: ", result)
+	if result != 0 {
 		panic("failed to initialize xml library")
 	}
 }

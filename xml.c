@@ -49,6 +49,9 @@ int init()
         fprintf(stderr, "Error: xmlsec-crypto initialization failed.\n");
         return(-1);
     }
+
+	fprintf(stderr, "Finished xml init()\n");
+	return 0;
 }
 
 int xmlEncode(void *ctx, xmlNodePtr node, char* encoding, int options) 
