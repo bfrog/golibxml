@@ -49,6 +49,7 @@ int init()
         fprintf(stderr, "Error: xmlsec-crypto initialization failed.\n");
         return(-1);
     }
+    return 0;
 }
 
 int xmlEncode(void *ctx, xmlNodePtr node, char* encoding, int options) 
@@ -156,7 +157,7 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, char *keyName, void *key, size_t key
     }
 
     /* set key name to the file name, this is just an example! */
-    if(xmlSecKeySetName(dsigCtx->signKey, keyName) < 0) {
+    if(xmlSecKeySetName(dsigCtx->signKey, (const xmlChar *)keyName) < 0) {
         fprintf(stderr,"Error: failed to set key name to \"%s\"\n", keyName);
         goto done;
     }
