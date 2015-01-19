@@ -3,6 +3,7 @@
 
 #include <libxml/tree.h>
 #include <libxml/xmlsave.h>
+#include <libxml/c14n.h>
 
 #include <libxslt/xslt.h>
 #include <libxslt/security.h>
