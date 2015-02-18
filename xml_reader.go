@@ -1,6 +1,7 @@
 package xml
 
 /*
+#cgo CFLAGS: -w
 #cgo pkg-config: libxml-2.0
 #include <libxml/xmlreader.h>
 
