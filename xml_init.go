@@ -3,6 +3,7 @@
 package xml
 
 /*
+#cgo CFLAGS: -w
 #cgo pkg-config: libxml-2.0 libxslt xmlsec1-openssl
 #include "xml.h"
 */
