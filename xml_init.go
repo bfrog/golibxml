@@ -3,7 +3,7 @@
 package xml
 
 /*
-#cgo pkg-config: libxml-2.0 libxslt xmlsec1-openssl
+#cgo pkg-config: libxml-2.0 libxslt xmlsec1
 #include "xml.h"
 */
 import "C"

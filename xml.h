@@ -1,6 +1,10 @@
 #ifndef __XML_H__
 #define __XML_H__
 
+#define LIBXML_STATIC
+#define LIBXSTL_STATIC
+#define XMLSEC_STATIC
+
 #include <libxml/tree.h>
 #include <libxml/xmlsave.h>
 #include <libxml/c14n.h>
