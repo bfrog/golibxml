@@ -1,7 +1,6 @@
 package xml
 
 /*
-#cgo pkg-config: libxml-2.0
 #include <libxml/xpath.h>
 
 static inline void free_string(char* s) { free(s); }
@@ -37,17 +36,18 @@ type NodeSet struct {
 ////////////////////////////////////////////////////////////////////////////////
 
 type XpathObjectType int
+
 const (
-	XPATH_UNDEFINED XpathObjectType = 0
-	XPATH_NODESET = 1
-	XPATH_BOOLEAN = 2
-	XPATH_NUMBER = 3
-	XPATH_STRING = 4
-	XPATH_POINT = 5
-	XPATH_RANGE = 6
-	XPATH_LOCATIONSET = 7
-	XPATH_USERS = 8
-	XPATH_XSLT_TREE = 9 //: An XSLT value tree, non modifiable
+	XPATH_UNDEFINED   XpathObjectType = 0
+	XPATH_NODESET                     = 1
+	XPATH_BOOLEAN                     = 2
+	XPATH_NUMBER                      = 3
+	XPATH_STRING                      = 4
+	XPATH_POINT                       = 5
+	XPATH_RANGE                       = 6
+	XPATH_LOCATIONSET                 = 7
+	XPATH_USERS                       = 8
+	XPATH_XSLT_TREE                   = 9 //: An XSLT value tree, non modifiable
 )
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -199,4 +199,3 @@ func (obj *XPathObject) Copy() *XPathObject {
 func (doc *Document) OrderDocElems() int {
 	return int(C.xmlXPathOrderDocElems(doc.Ptr))
 }
-

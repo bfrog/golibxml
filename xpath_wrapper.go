@@ -1,7 +1,6 @@
 package xml
 
 /*
-#cgo pkg-config: libxml-2.0
 #include <libxml/xpath.h>
 
 xmlNode* fetchNode(xmlNodeSet *nodeset, int index) {
@@ -24,4 +23,3 @@ func (obj *XPathObject) Results() chan *Node {
 	}(obj, channel)
 	return channel
 }
-

@@ -3,7 +3,6 @@
 package xml
 
 /*
-#cgo pkg-config: libxml-2.0
 #include <libxml/tree.h>
 
 static inline void free_string(char* s) { free(s); }

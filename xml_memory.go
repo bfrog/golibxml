@@ -1,7 +1,6 @@
 package xml
 
 /*
-#cgo pkg-config: libxml-2.0
 #include <libxml/parser.h>
 */
 import "C"

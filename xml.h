@@ -35,9 +35,9 @@ int xmlEncode(void *ctx, xmlNodePtr node, char* encoding, int options);
 xmlDocPtr xmlDecode(void *ctx, char *encoding, int options);
 
 // sign a node in an xml tree with a key and cert (pem encoded)
-int xmlSign(xmlDocPtr doc, xmlNodePtr node, char *keyName, void *key, size_t keyLen, void *cert, size_t certLen);
+int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen, void *cert, size_t certLen);
 
 // verify a signed node in an xml tree with a known key
-int xmlVerify(xmlNodePtr node, char *keyName, void* key, size_t keyLen);
+int xmlVerify(xmlNodePtr node, void* key, size_t keyLen);
 
 #endif

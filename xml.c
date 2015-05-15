@@ -91,7 +91,7 @@ int xmlC14NEncode(void *ctx, xmlDocPtr doc, xmlNodeSetPtr nodes, int mode,
     return ret;
 }
 
-int xmlSign(xmlDocPtr doc, xmlNodePtr node, char *keyName, void *key, size_t keyLen, void *cert, size_t certLen)
+int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen, void *cert, size_t certLen)
 {
     xmlNodePtr signNode = NULL;
     xmlNodePtr refNode = NULL;
@@ -99,9 +99,9 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, char *keyName, void *key, size_t key
     xmlSecDSigCtxPtr dsigCtx = NULL;
     int res = -1;
 
-    /* create signature template for RSA-SHA1 enveloped signature */
-    signNode = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
-            xmlSecTransformRsaSha1Id, NULL);
+    /* create signature template for RSA-SHA256 enveloped signature */
+    signNode = xmlSecTmplSignatureCreateNsPref(doc, xmlSecTransformExclC14NWithCommentsId,
+            xmlSecTransformRsaSha256Id, NULL, "ds");
     if(signNode == NULL) {
         fprintf(stderr, "Error: failed to create signature template\n");
         goto done;              
@@ -111,7 +111,7 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, char *keyName, void *key, size_t key
     xmlAddChild(node, signNode);
 
     /* add reference */
-    refNode = xmlSecTmplSignatureAddReference(signNode, xmlSecTransformSha1Id,
+    refNode = xmlSecTmplSignatureAddReference(signNode, xmlSecTransformSha256Id,
             NULL, NULL, NULL);
     if(refNode == NULL) {
         fprintf(stderr, "Error: failed to add reference to signature template\n");
@@ -124,15 +124,9 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, char *keyName, void *key, size_t key
         goto done;              
     }
 
-    /* add <dsig:KeyInfo/> and <dsig:X509Data/> */
-    keyInfoNode = xmlSecTmplSignatureEnsureKeyInfo(signNode, NULL);
-    if(keyInfoNode == NULL) {
-        fprintf(stderr, "Error: failed to add key info\n");
-        goto done;              
-    }
-
-    if(xmlSecTmplKeyInfoAddX509Data(keyInfoNode) == NULL) {
-        fprintf(stderr, "Error: failed to add X509Data node\n");
+    /* add c14n transform */
+    if(xmlSecTmplReferenceAddTransform(refNode, xmlSecTransformExclC14NWithCommentsId) == NULL) {
+        fprintf(stderr, "Error: failed to add c14n-excl transform to reference\n");
         goto done;              
     }
 
@@ -156,12 +150,6 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, char *keyName, void *key, size_t key
         goto done;
     }
 
-    /* set key name to the file name, this is just an example! */
-    if(xmlSecKeySetName(dsigCtx->signKey, (const xmlChar *)keyName) < 0) {
-        fprintf(stderr,"Error: failed to set key name to \"%s\"\n", keyName);
-        goto done;
-    }
-
     /* sign the template */
     if(xmlSecDSigCtxSign(dsigCtx, signNode) < 0) {
         fprintf(stderr,"Error: signature failed\n");
@@ -176,7 +164,7 @@ done:
     return 0;
 }
 
-int xmlVerify(xmlNodePtr node, char* keyName, void* cert, size_t certLen)
+int xmlVerify(xmlNodePtr node, void* cert, size_t certLen)
 {
 	xmlSecKeysMngrPtr mngr = NULL;
     xmlNodePtr dsigNode = NULL;
