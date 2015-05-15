@@ -91,7 +91,7 @@ int xmlC14NEncode(void *ctx, xmlDocPtr doc, xmlNodeSetPtr nodes, int mode,
     return ret;
 }
 
-int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen, void *cert, size_t certLen)
+int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
 {
     xmlNodePtr signNode = NULL;
     xmlNodePtr refNode = NULL;
@@ -141,12 +141,6 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen, void *cert
     dsigCtx->signKey = xmlSecCryptoAppKeyLoadMemory(key, keyLen, xmlSecKeyDataFormatPem, NULL, NULL, NULL);
     if(dsigCtx->signKey == NULL) {
         fprintf(stderr,"Error: failed to load private binary key from\n");
-        goto done;
-    }
-
-    /* load certificate and add to the key */
-    if(xmlSecCryptoAppKeyCertLoadMemory(dsigCtx->signKey, cert, certLen, xmlSecKeyDataFormatCertPem) < 0) {
-        fprintf(stderr,"Error: failed to load binary certificate\n");
         goto done;
     }
 

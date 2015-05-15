@@ -55,7 +55,7 @@ func TestDigitalSignature(t *testing.T) {
 	node := NewNode(nil, "blackbox")
 	node.SetContent("magic")
 	doc.AddChild(node)
-	if err := DigitallySign(doc, node, privPem, certPem); err != nil {
+	if err := DigitallySign(doc, node, privPem); err != nil {
 		t.Fatalf("xml %s could not be signed, err: %s", node.StringDump(), err)
 	}
 	if signed, err := VerifySignature(node, certPem); err != nil {

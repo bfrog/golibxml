@@ -23,30 +23,28 @@ type DigitalSignature struct {
 }
 */
 
-// Digitally sign a node in a document using the key and cert pem encoded data
-func DigitallySign(doc *Document, node *Node, key []byte, cert []byte) error {
+// DigitallySign a node in a document using the key and cert pem encoded data
+func DigitallySign(doc *Document, node *Node, key []byte) error {
 	keyPtr := unsafe.Pointer(&key[0])
 	keyLen := (C.size_t)(len(key))
-	certPtr := unsafe.Pointer(&cert[0])
-	certLen := (C.size_t)(len(cert))
-	res := C.xmlSign(doc.Ptr, node.Ptr, keyPtr, keyLen, certPtr, certLen)
+	res := C.xmlSign(doc.Ptr, node.Ptr, keyPtr, keyLen)
 	if int(res) != 0 {
 		return errors.New("error digitally signing xml")
 	}
 	return nil
 }
 
-// DigitallyVerify a signed node in a document using a given pem encoded cert data
-func VerifySignature(node *Node, key []byte) (bool, error) {
+// VerifySignature a signed node in a document using a given pem encoded cert data
+func VerifySignature(node *Node, cert []byte) (bool, error) {
 	if node == nil || node.Ptr == nil {
 		return false, nil
 	}
-	keyPtr := unsafe.Pointer(&key[0])
-	keyLen := (C.size_t)(len(key))
-	res := int(C.xmlVerify(node.Ptr, keyPtr, keyLen))
+	certPtr := unsafe.Pointer(&cert[0])
+	certLen := (C.size_t)(len(cert))
+	res := int(C.xmlVerify(node.Ptr, certPtr, certLen))
 
 	if res < 0 {
-		return false, errors.New("error verifying digitally signing xml")
+		return false, errors.New("error verifying digitally signed xml")
 	} else if res == 1 {
 		return true, nil
 	}
