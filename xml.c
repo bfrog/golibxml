@@ -1,11 +1,14 @@
 #include "xml.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 	
 int init()
 {
     /* Init libxml and libxslt libraries */
     xmlInitParser();
     LIBXML_TEST_VERSION
-        xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS;
+    xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS;
     xmlSubstituteEntitiesDefault(1);
 #ifndef XMLSEC_NO_XSLT
     xmlIndentTreeOutput = 1; 
@@ -93,9 +96,14 @@ int xmlC14NEncode(void *ctx, xmlDocPtr doc, xmlNodeSetPtr nodes, int mode,
 
 int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
 {
+    size_t id_len = 0;
+    size_t uri_len = 0;
+    xmlAttrPtr idAttr = NULL;
     xmlNodePtr signNode = NULL;
     xmlNodePtr refNode = NULL;
     xmlNodePtr keyInfoNode = NULL;
+    xmlChar* id = NULL;
+    xmlChar* uri = NULL; 
     xmlSecDSigCtxPtr dsigCtx = NULL;
     int res = -1;
 
@@ -110,9 +118,24 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
     /* add <dsig:Signature/> node to the doc */
     xmlAddChild(node, signNode);
 
+    /* get node id which we use for the reference URI */
+    for(idAttr = node->properties; idAttr != NULL; idAttr = idAttr->next) {
+        if(xmlStrEqual(idAttr->name, "ID")) {
+            break;
+        }
+    }
+    if(idAttr != NULL) {
+        id = xmlNodeListGetString(node->doc, idAttr->children, 1);
+        if(id != NULL) {
+            xmlAddID(NULL, node->doc, id, idAttr);
+            uri = xmlStrncatNew("#", id, -1);
+            printf("uri: %s\n", uri);
+        }
+    }
+
     /* add reference */
     refNode = xmlSecTmplSignatureAddReference(signNode, xmlSecTransformSha256Id,
-            NULL, NULL, NULL);
+            NULL, uri, NULL);
     if(refNode == NULL) {
         fprintf(stderr, "Error: failed to add reference to signature template\n");
         goto done;              
@@ -151,6 +174,9 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
     }
 
 done:
+    if(uri != NULL) {
+        free(uri);
+    }
     if(dsigCtx != NULL) {
         xmlSecDSigCtxDestroy(dsigCtx);
     }
