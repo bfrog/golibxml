@@ -1,7 +1,4 @@
 #include "xml.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 	
 int init()
 {
@@ -129,7 +126,6 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
         if(id != NULL) {
             xmlAddID(NULL, node->doc, id, idAttr);
             uri = xmlStrncatNew("#", id, -1);
-            printf("uri: %s\n", uri);
         }
     }
 
