@@ -182,10 +182,27 @@ done:
 
 int xmlVerify(xmlNodePtr node, void* cert, size_t certLen)
 {
+    xmlChar* id = NULL;
+    xmlAttrPtr idAttr = NULL;
 	xmlSecKeysMngrPtr mngr = NULL;
     xmlNodePtr dsigNode = NULL;
     xmlSecDSigCtxPtr dsigCtx = NULL;
     int res = -1;
+
+    /* Get a child attribute Node with name "ID" which we use for the
+       is often used in the digital signature reference URI. It must be set as
+       the unique Node ID */
+    for(idAttr = node->properties; idAttr != NULL; idAttr = idAttr->next) {
+        if(xmlStrEqual(idAttr->name, "ID")) {
+            break;
+        }
+    }
+    if(idAttr != NULL) {
+        id = xmlNodeListGetString(node->doc, idAttr->children, 1);
+        if(id != NULL) {
+            xmlAddID(NULL, node->doc, id, idAttr);
+        }
+    }
 
     /* create keys manager and load keys */
     mngr = xmlSecKeysMngrCreate();
@@ -231,14 +248,12 @@ int xmlVerify(xmlNodePtr node, void* cert, size_t certLen)
         goto done;
     }
 
-    /* print verification result to stdout */
+    /* Set result code */
     if(dsigCtx->status == xmlSecDSigStatusSucceeded) {
-        fprintf(stdout, "Signature is OK\n");
         res = 1;
     } else {
-        fprintf(stdout, "Signature is INVALID\n");
         res = 0;
-    }    
+    }
 
 done:
     /* cleanup */
