@@ -50,6 +50,7 @@ func TestDigitalSignature(t *testing.T) {
 			Bytes: x509.MarshalPKCS1PrivateKey(privKey),
 		},
 	)
+	// Without ID
 	doc := NewDoc("1.0")
 	defer doc.Free()
 	node := NewNode(nil, "blackbox")
@@ -74,5 +75,21 @@ func TestDigitalSignature(t *testing.T) {
 		t.Fatalf("xml node with nil ptr could not be verified, err: %s", err)
 	} else if signed {
 		t.Errorf("expected verify to be false for node with nil ptr")
+	}
+
+	// With ID
+	doc0 := NewDoc("1.0")
+	defer doc0.Free()
+	node0 := NewNode(nil, "blackbox")
+	node0.SetContent("magic")
+	node0.SetProp("ID", "abc")
+	doc0.AddChild(node0)
+	if err := DigitallySign(doc0, node0, privPem); err != nil {
+		t.Fatalf("xml %s could not be signed, err: %s", node.StringDump(), err)
+	}
+	if signed, err := VerifySignature(node0, certPem); err != nil {
+		t.Fatalf("xml %s could not be verified, err: %s", node0.StringDump(), err)
+	} else if !signed {
+		t.Errorf("expected verify to be true")
 	}
 }
