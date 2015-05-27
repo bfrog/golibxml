@@ -92,7 +92,6 @@ int xmlC14NEncode(void *ctx, xmlDocPtr doc, xmlNodeSetPtr nodes, int mode,
 }
 
 void xmlEnsureID(xmlNodePtr node, xmlChar* name, xmlChar** id) {
-    xmlIDPtr idPtr = NULL;
     xmlAttrPtr idAttr = NULL;
     *id = xmlGetProp(node, name);
     idAttr = xmlGetID(node->doc, *id);
@@ -106,16 +105,11 @@ void xmlEnsureID(xmlNodePtr node, xmlChar* name, xmlChar** id) {
         if(idAttr != NULL) {
             *id = xmlNodeListGetString(node->doc, idAttr->children, 1);
             if(id != NULL) {
-                idPtr = xmlAddID(NULL, node->doc, *id, idAttr);
-                if (idPtr != NULL) {
-                    printf("id ptr name %s\n", idPtr->value);
-                }
+                xmlAddID(NULL, node->doc, *id, idAttr);
             }
         }
     }
 }
-
-
 
 int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
 {
