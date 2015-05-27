@@ -91,6 +91,26 @@ int xmlC14NEncode(void *ctx, xmlDocPtr doc, xmlNodeSetPtr nodes, int mode,
     return ret;
 }
 
+void xmlEnsureID(xmlNodePtr node, xmlChar* name, xmlChar** id) {
+    xmlAttrPtr idAttr = NULL;
+    *id = xmlGetProp(node, name);
+    idAttr = xmlGetID(node->doc, *id);
+    if(idAttr == NULL) {
+        /* get node id which we use for the reference URI */
+        for(idAttr = node->properties; idAttr != NULL; idAttr = idAttr->next) {
+            if(xmlStrEqual(idAttr->name, name)) {
+                break;
+            }
+        }
+        if(idAttr != NULL) {
+            *id = xmlNodeListGetString(node->doc, idAttr->children, 1);
+            if(id != NULL) {
+                xmlAddID(NULL, node->doc, *id, idAttr);
+            }
+        }
+    }
+}
+
 int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
 {
     size_t id_len = 0;
@@ -115,20 +135,13 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
     /* add <dsig:Signature/> node to the doc */
     xmlAddChild(node, signNode);
 
-    /* get node id which we use for the reference URI */
-    for(idAttr = node->properties; idAttr != NULL; idAttr = idAttr->next) {
-        if(xmlStrEqual(idAttr->name, "ID")) {
-            break;
-        }
-    }
-    if(idAttr != NULL) {
-        id = xmlNodeListGetString(node->doc, idAttr->children, 1);
-        if(id != NULL) {
-            xmlAddID(NULL, node->doc, id, idAttr);
-            uri = xmlStrncatNew("#", id, -1);
-        }
-    }
+    /* ensure an ID attribute exists */
+    xmlEnsureID(node, "ID", &id);
+	if(id != NULL) {
+    	uri = xmlStrncatNew("#", id, -1);
+	}
 
+    
     /* add reference */
     refNode = xmlSecTmplSignatureAddReference(signNode, xmlSecTransformSha256Id,
             NULL, uri, NULL);
@@ -156,7 +169,7 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
         goto done;
     }
 
-    /* load private key, assuming that there is not password */
+    /* load private key, assuming that there is no password */
     dsigCtx->signKey = xmlSecCryptoAppKeyLoadMemory(key, keyLen, xmlSecKeyDataFormatPem, NULL, NULL, NULL);
     if(dsigCtx->signKey == NULL) {
         fprintf(stderr,"Error: failed to load private binary key from\n");
@@ -180,30 +193,90 @@ done:
     return 0;
 }
 
+int xmlDecrypt(xmlNodePtr node, void* keyData, size_t keyLen) {
+    xmlSecKeysMngrPtr mngr = NULL;
+    xmlSecKeyPtr key = NULL;
+    xmlNodePtr encNode = NULL;
+    xmlSecEncCtxPtr encCtx = NULL;
+    int res = -1;
+
+    /* create a key manager */
+    mngr = xmlSecKeysMngrCreate();
+    if(mngr == NULL) {
+        fprintf(stderr, "Error: failed to create keys manager.\n");
+        return -1;
+    }
+
+    if(xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
+        fprintf(stderr, "Error: failed to create keys manager.\n");
+        xmlSecKeysMngrDestroy(mngr);
+        return -1;
+    }
+
+    /* load key */
+    key = xmlSecCryptoAppKeyLoadMemory(keyData, keyLen, xmlSecKeyDataFormatPem, NULL, NULL, NULL);
+    if(key == NULL) {
+        fprintf(stderr,"Error: failed to load pem key from memory\n");
+        xmlSecKeysMngrDestroy(mngr);
+        return -1;
+    }
+
+    /* add key to keys manager, from now on keys manager is responsible 
+     * for destroying key 
+     */
+    if(xmlSecCryptoAppDefaultKeysMngrAdoptKey(mngr, key) < 0) {
+        fprintf(stderr,"Error: failed to add key from \"%s\" to keys manager\n");
+        xmlSecKeyDestroy(key);
+        xmlSecKeysMngrDestroy(mngr);
+        return -1;
+    }
+
+    /* find start node */
+    encNode = xmlSecFindNode(node, xmlSecNodeEncryptedData, xmlSecEncNs);
+    if(encNode == NULL) {
+        fprintf(stderr, "Error: start node not found in document\n");
+        goto done;
+    }
+
+    /* create encryption context */
+    encCtx = xmlSecEncCtxCreate(mngr);
+    if(encCtx == NULL) {
+        fprintf(stderr,"Error: failed to create encryption context\n");
+        goto done;
+    }
+
+    /* decrypt the data */
+    if((xmlSecEncCtxDecrypt(encCtx, encNode) < 0) || (encCtx->result == NULL)) {
+        fprintf(stderr,"Error: decryption failed\n");
+        goto done;
+    }
+
+    /* success */
+    res = 0;
+
+done:    
+    /* cleanup */
+    if(mngr != NULL) {
+        xmlSecKeysMngrDestroy(mngr);
+    }
+
+    if(encCtx != NULL) {
+        xmlSecEncCtxDestroy(encCtx);
+    }
+
+    return res;
+}
+
 int xmlVerify(xmlNodePtr node, void* cert, size_t certLen)
 {
     xmlChar* id = NULL;
-    xmlAttrPtr idAttr = NULL;
 	xmlSecKeysMngrPtr mngr = NULL;
     xmlNodePtr dsigNode = NULL;
     xmlSecDSigCtxPtr dsigCtx = NULL;
     int res = -1;
 
-    /* Get a child attribute Node with name "ID" which we use for the
-       is often used in the digital signature reference URI. It must be set as
-       the unique Node ID */
-    for(idAttr = node->properties; idAttr != NULL; idAttr = idAttr->next) {
-        if(xmlStrEqual(idAttr->name, "ID")) {
-            break;
-        }
-    }
-    if(idAttr != NULL) {
-        id = xmlNodeListGetString(node->doc, idAttr->children, 1);
-        if(id != NULL) {
-            xmlAddID(NULL, node->doc, id, idAttr);
-        }
-    }
-
+    xmlEnsureID(node, "ID", &id);
+    
     /* create keys manager and load keys */
     mngr = xmlSecKeysMngrCreate();
     if(mngr == NULL) {
@@ -212,12 +285,6 @@ int xmlVerify(xmlNodePtr node, void* cert, size_t certLen)
     }
     if(xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
         fprintf(stderr, "Error: could not initialize key manager\n");
-        goto done;
-    }
-
-    /* load trusted cert from memory */
-    if(xmlSecCryptoAppKeysMngrCertLoadMemory(mngr, cert, certLen, xmlSecKeyDataFormatCertPem, xmlSecKeyDataTypeNone) < 0) {
-        fprintf(stderr, "Error: could not load cert\n");
         goto done;
     }
 
@@ -257,7 +324,6 @@ int xmlVerify(xmlNodePtr node, void* cert, size_t certLen)
 
 done:
     /* cleanup */
-
     if(dsigCtx != NULL) {
         xmlSecDSigCtxDestroy(dsigCtx);
     }
@@ -267,6 +333,3 @@ done:
 
     return(res);
 }
-
-
-

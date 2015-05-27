@@ -11,6 +11,7 @@
 #include <xmlsec/xmlsec.h>
 #include <xmlsec/xmltree.h>
 #include <xmlsec/xmldsig.h>
+#include <xmlsec/xmlenc.h>
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
@@ -39,5 +40,8 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen);
 
 // verify a signed node in an xml tree with a known key
 int xmlVerify(xmlNodePtr node, void* key, size_t keyLen);
+
+// Decrypt an encrypted node in an xml tree with a given key
+int xmlDecrypt(xmlNodePtr node, void* key, size_t keyLen);
 
 #endif
