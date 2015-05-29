@@ -277,17 +277,6 @@ int xmlVerify(xmlNodePtr node, void* cert, size_t certLen)
 
     xmlEnsureID(node, "ID", &id);
     
-    /* create keys manager and load keys */
-    mngr = xmlSecKeysMngrCreate();
-    if(mngr == NULL) {
-        fprintf(stderr, "Error: could not create key manager\n");
-        goto done;
-    }
-    if(xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
-        fprintf(stderr, "Error: could not initialize key manager\n");
-        goto done;
-    }
-
     /* find start node */
     dsigNode = xmlSecFindNode(node, xmlSecNodeSignature, xmlSecDSigNs);
     if(node == NULL) {
@@ -295,14 +284,14 @@ int xmlVerify(xmlNodePtr node, void* cert, size_t certLen)
         goto done;      
     }
 
-    /* create signature context */
+    /* Create signature context */
     dsigCtx = xmlSecDSigCtxCreate(NULL);
     if(dsigCtx == NULL) {
         fprintf(stderr,"Error: failed to create signature context\n");
         goto done;
     }
 
-    /* load private key, assuming that there is not password */
+    /* Load private key, assuming that there is not password */
     dsigCtx->signKey = xmlSecCryptoAppKeyLoadMemory(cert, certLen, xmlSecKeyDataFormatCertPem, NULL, NULL, NULL);
     if(dsigCtx->signKey == NULL) {
         fprintf(stderr,"Error: failed to load private binary key from\n");
@@ -323,12 +312,9 @@ int xmlVerify(xmlNodePtr node, void* cert, size_t certLen)
     }
 
 done:
-    /* cleanup */
+    /* cleanup, note that destroying the context frees the allocated signKey as well */
     if(dsigCtx != NULL) {
         xmlSecDSigCtxDestroy(dsigCtx);
-    }
-    if(mngr != NULL) {
-        xmlSecKeysMngrDestroy(mngr);
     }
 
     return(res);
