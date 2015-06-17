@@ -666,6 +666,16 @@ func (node *Node) SetProp(name string, value string) *Attribute {
 	return makeAttribute(cattr)
 }
 
+// xmlSetNsProp
+func (node *Node) SetNsProp(ns *Namespace, name string, value string) *Attribute {
+	ptrn := C.CString(name)
+	defer C.free_string(ptrn)
+	ptrv := C.CString(value)
+	defer C.free_string(ptrv)
+	cattr := C.xmlSetNsProp(node.Ptr, ns.Ptr, C.to_xmlcharptr(ptrn), C.to_xmlcharptr(ptrv))
+	return makeAttribute(cattr)
+}
+
 // xmlGetProp
 func (node *Node) GetProp(name string) string {
 	ptrn := C.CString(name)
