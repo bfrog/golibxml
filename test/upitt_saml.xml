@@ -1,0 +1,373 @@
+<samlp:Response Version="2.0"
+
+                ID="beWDY0TEcU2VvoGL9OJk0UUYgp6"
+
+                IssueInstant="2015-09-29T20:59:33.240Z"
+
+                Destination="https://api.noblehour.com/sso/saml_consume"
+
+                xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+
+                >
+
+    <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">University_of_Pittsburgh:SAML2</saml:Issuer>
+
+    <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+
+        <ds:SignedInfo>
+
+            <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+
+            <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+
+            <ds:Reference URI="#beWDY0TEcU2VvoGL9OJk0UUYgp6">
+
+                <ds:Transforms>
+
+                    <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+
+                    <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+
+                </ds:Transforms>
+
+                <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+
+                <ds:DigestValue>BYnzvYjyPQHdafndKKgSxmXltlg=</ds:DigestValue>
+
+            </ds:Reference>
+
+        </ds:SignedInfo>
+
+        <ds:SignatureValue>
+
+r3/ObnaFEJchgnGPlkawdMMoWe+bgL4rM9fN830PfpREPh3BezrcKF0hhF1J5g7WezmTrWZ8OA8H
+
+PXOL5X3iXxUPKge4wOeL3eAmxRFTEXu/pH3He8BhMwxMY6t9W7A4ChHfilpbmJFKv6YVadI+KOUs
+
+nsrNquOEYYp9EzicQ9b+ZIuzujW105ekbWGPbaDrlNUzx6x/ojz1/aze5A35ZZAs6sgzlxhBZpIn
+
+TiQiUixWG5Gsb1yjjTf75mycqc7NdUkq02UCFuM7rKO3YY4Ym+12ClA4wswEeXIO1f1ms1bYvuCV
+
+2ZJ3HBLvCyCkjt+4rcArlrcKM5gReIDqkfTHig==
+
+</ds:SignatureValue>
+
+        <ds:KeyInfo>
+
+            <ds:X509Data>
+
+                <ds:X509Certificate>
+
+MIID2jCCAsKgAwIBAgIGAUa7NePpMA0GCSqGSIb3DQEBBQUAMIGtMQswCQYDVQQGEwJVUzEVMBMG
+
+A1UECBMMUGVubnN5bHZhbmlhMRMwEQYDVQQHEwpQaXR0c2J1cmdoMSEwHwYDVQQKExhVbml2ZXJz
+
+aXR5IG9mIFBpdHRzYnVyZ2gxMzAxBgNVBAsTKkNvbXB1dGluZyBTZXJ2aWNlcyBhbmQgU3lzdGVt
+
+cyBEZXZlbG9wbWVudDEaMBgGA1UEAwwRZmVkNHBpbmdAcGl0dC5lZHUwHhcNMTQwNjIwMjEzNjQ5
+
+WhcNMjQwNjE3MjEzNjQ5WjCBrTELMAkGA1UEBhMCVVMxFTATBgNVBAgTDFBlbm5zeWx2YW5pYTET
+
+MBEGA1UEBxMKUGl0dHNidXJnaDEhMB8GA1UEChMYVW5pdmVyc2l0eSBvZiBQaXR0c2J1cmdoMTMw
+
+MQYDVQQLEypDb21wdXRpbmcgU2VydmljZXMgYW5kIFN5c3RlbXMgRGV2ZWxvcG1lbnQxGjAYBgNV
+
+BAMMEWZlZDRwaW5nQHBpdHQuZWR1MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv0OB
+
+oK2NgZ743xThXp/CbB+LueKFekzAe5FPuuIJ7GXtDpfL012kqT/YcuvuxhtBW0LCVzNnfyD97grd
+
+BFMr/G6Sfui5D82mr0xFjAixd3aLo8Eh3gy3hRmj9lQeLbAOF2jMbW8KO9DpUARhI2J0bz7wnICx
+
+dh4fcwi4APF3Go9uzg8VbaqpQ8fv1Q/5fMOm+QnukHEbQLIi4EDUgb8EkUnGifjWpEPandVrZKlX
+
+qc/tJl7b7BW30dZ0BHNW7Y90QWMTHbYvAP0MKX7Emilpi6V6TehGf4jJ8dXnw5dHhu09m6aTqZbJ
+
+XOAHltGqI18c12Y3kRObvh03keDsOcPPUwIDAQABMA0GCSqGSIb3DQEBBQUAA4IBAQCqGn90HY2x
+
+wa5xum0EuYI8ir6Uv1+BA5zPLheDZF84CsV3Ay138ZT1R/CQuzCZJkz2e1b73XHNqqNIfWKi22qj
+
+cbIhPpzank9Ib/cecHKI4oBG/5UvByJJFBau80LmBJDnQ7OfPuB63+XQto1SH5D+OU0cihSyZp79
+
+Jbe37aWliuoiSSMwxNj6d0isYyws1T9RZfTRYxKAtgTbnR2fhTwt1MUO6NUmno+VhzTWBMg6aMaw
+
+BKVACkv3B5MSytxxijZvAwyfxi9VVLzogveX4dmy68PP8OA4wDCstP8rFUCZxJH+1+s+f5QGh20X
+
+CASmpH8NrpatlyPL6uHDxTcXygYm
+
+</ds:X509Certificate>
+
+            </ds:X509Data>
+
+            <ds:KeyValue>
+
+                <ds:RSAKeyValue>
+
+                    <ds:Modulus>
+
+v0OBoK2NgZ743xThXp/CbB+LueKFekzAe5FPuuIJ7GXtDpfL012kqT/YcuvuxhtBW0LCVzNnfyD9
+
+7grdBFMr/G6Sfui5D82mr0xFjAixd3aLo8Eh3gy3hRmj9lQeLbAOF2jMbW8KO9DpUARhI2J0bz7w
+
+nICxdh4fcwi4APF3Go9uzg8VbaqpQ8fv1Q/5fMOm+QnukHEbQLIi4EDUgb8EkUnGifjWpEPandVr
+
+ZKlXqc/tJl7b7BW30dZ0BHNW7Y90QWMTHbYvAP0MKX7Emilpi6V6TehGf4jJ8dXnw5dHhu09m6aT
+
+qZbJXOAHltGqI18c12Y3kRObvh03keDsOcPPUw==
+
+</ds:Modulus>
+
+                    <ds:Exponent>AQAB</ds:Exponent>
+
+                </ds:RSAKeyValue>
+
+            </ds:KeyValue>
+
+        </ds:KeyInfo>
+
+    </ds:Signature>
+
+    <samlp:Status>
+
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
+
+    </samlp:Status>
+
+    <saml:EncryptedAssertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
+
+        <xenc:EncryptedData Type="http://www.w3.org/2001/04/xmlenc#Element"
+
+                            xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"
+
+                            >
+
+            <xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc" />
+
+            <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+
+                <xenc:EncryptedKey>
+
+                    <xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p" />
+
+                    <xenc:CipherData>
+
+                        <xenc:CipherValue>KD8g0vNJgeTuno2+lbKLa2Lr0LPNdYgHHaecu1Nx71wm8+t15Hyja6Drx6UdydIC7TRGQUz3zdsp
+
+Ip1Q6zzwmKorPq5+teKCskPiz4h3iDcRqOA4GVUwGggcm5bjrMXB3MCFPHoxme+6o46AdKs9ZzjI
+
+sg940plOO1poiXzfecLSl9cpEnH0hiqiSfgZulf4uQTlFTHqVrnzruk2npTaHBFJN75U7OoYOK/c
+
+58wTfLlIDCjdgl1lns2u/jl637cnMF2BXIZwzkYp5FKwbiruP0533m9dhBPOBZinSxCAMzVXENuG
+
+fG2ZE/4H3/RtS2UNOYFtdFHfdfR8hmwcBesKMC0U0naOePgHH8yhlSEBWV43rP0QQ1kc3t6UI1ie
+
+f3uMiMaP0IGF8UoHWvQtdeejTYHn9q87fBYKE2qvdRf0ByextFfm2/ZXuQ11snkLGGnIqcE87fVn
+
+yW/9eWc/ICXTmvmvfnjjJueolyKwmOSZHHBcEeIl90kUxGyZqClIQIyEZryNU2NURS2rlCSCOQDy
+
+4fsg2PubMjBWdmsuJ6SoPpSXPMpdiYXm0FmN17WpDSIpCgNAK73TnlEJZZNp1oB9Y7E6fQH3W9Wl
+
+oqWBiv2PAUX8J/c4MbqBGzsjNShsEnBBSg3OPQcxeyojF39POUHu+B26VrDsrULNpgkjhZg2MZE=</xenc:CipherValue>
+
+                    </xenc:CipherData>
+
+                </xenc:EncryptedKey>
+
+            </ds:KeyInfo>
+
+            <xenc:CipherData>
+
+                <xenc:CipherValue>+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
+
+ibGpvy0X+/HnFSgATSAGtm4E5nBxBs3s1cnO</xenc:CipherValue>
+
+            </xenc:CipherData>
+
+        </xenc:EncryptedData>
+
+    </saml:EncryptedAssertion>
+
+</samlp:Response>
