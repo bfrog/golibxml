@@ -15,8 +15,11 @@ import (
 
 // Decrypt a node in a document using the key  pem encoded data
 func Decrypt(node *Node, key []byte) error {
-	keyPtr := unsafe.Pointer(&key[0])
 	keyLen := (C.size_t)(len(key))
+	if keyLen == 0 {
+		return errors.New("cannot decrypt XML due to empty decryption key")
+	}
+	keyPtr := unsafe.Pointer(&key[0])
 	res := C.xmlDecrypt(node.Ptr, keyPtr, keyLen)
 	if int(res) != 0 {
 		return errors.New("error decrypting xml")

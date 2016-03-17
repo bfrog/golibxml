@@ -73,3 +73,17 @@ func TestDecrypt(t *testing.T) {
 	}
 	t.Fatal("EncryptedAssertion node wasn't found")
 }
+
+func TestDecryptWithEmptyKey(t *testing.T) {
+	doc := ParseEntity(TEST_SAML_FILE)
+	node := doc.Root().Children()
+	for node != nil {
+		if node.Name() == "EncryptedAssertion" {
+			err := Decrypt(node, []byte(""))
+			assert.Equal(t, err.Error(), "cannot decrypt XML due to empty decryption key")
+			return
+		}
+		node = node.NextSibling()
+	}
+	t.Fatal("EncryptedAssertion node wasn't found")
+}
