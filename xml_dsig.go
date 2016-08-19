@@ -23,11 +23,42 @@ type DigitalSignature struct {
 }
 */
 
+type SHAAlgorithm int
+
+const (
+	SHA0Algorithm SHAAlgorithm = iota
+	SHA1Algorithm
+	SHA224Algorithm
+	SHA256Algorithm
+	SHA384Algorithm
+	SHA512Algorithm
+)
+
 // DigitallySign a node in a document using the key and cert pem encoded data
-func DigitallySign(doc *Document, node *Node, key []byte) error {
+func DigitallySign(doc *Document, node *Node, key []byte, shaAlgorithm SHAAlgorithm) error {
+	var signMethodID C.xmlSecTransformId
+	var digestMethodID C.xmlSecTransformId
+	switch shaAlgorithm {
+	case SHA1Algorithm:
+		signMethodID = C.xmlSecTransformRsaSha1Id
+		digestMethodID = C.xmlSecTransformSha1Id
+	case SHA224Algorithm:
+		signMethodID = C.xmlSecTransformRsaSha224Id
+		digestMethodID = C.xmlSecTransformSha224Id
+	case SHA256Algorithm:
+		signMethodID = C.xmlSecTransformRsaSha256Id
+		digestMethodID = C.xmlSecTransformSha256Id
+	case SHA384Algorithm:
+		signMethodID = C.xmlSecTransformRsaSha384Id
+		digestMethodID = C.xmlSecTransformSha384Id
+	case SHA512Algorithm:
+		signMethodID = C.xmlSecTransformRsaSha512Id
+		digestMethodID = C.xmlSecTransformSha512Id
+	}
+
 	keyPtr := unsafe.Pointer(&key[0])
 	keyLen := (C.size_t)(len(key))
-	res := C.xmlSign(doc.Ptr, node.Ptr, keyPtr, keyLen)
+	res := C.xmlSign(doc.Ptr, node.Ptr, keyPtr, keyLen, signMethodID, digestMethodID)
 	if int(res) != 0 {
 		return errors.New("error digitally signing xml")
 	}
