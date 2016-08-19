@@ -112,7 +112,8 @@ void xmlEnsureID(xmlNodePtr node, xmlChar* name, xmlChar** id) {
 }
 
 int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen,
-        xmlSecTransformId signMethodId, xmlSecTransformId digestMethodId)
+        xmlSecTransformId signMethodId, xmlSecTransformId digestMethodId,
+        xmlSecTransformId transformId)
 {
     size_t id_len = 0;
     size_t uri_len = 0;
@@ -126,7 +127,7 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen,
     int res = -1;
 
     /* create signature template for RSA-SHA256 enveloped signature */
-    signNode = xmlSecTmplSignatureCreateNsPref(doc, xmlSecTransformExclC14NWithCommentsId,
+    signNode = xmlSecTmplSignatureCreateNsPref(doc, transformId,
             signMethodId, NULL, "ds");
     if(signNode == NULL) {
         fprintf(stderr, "Error: failed to create signature template\n");

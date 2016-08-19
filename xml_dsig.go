@@ -34,8 +34,16 @@ const (
 	SHA512Algorithm
 )
 
+type C14NAlgorithm int
+
+const (
+	C14NExclusive C14NAlgorithm = iota
+	C14NExclusiveWithComments
+)
+
 // DigitallySign a node in a document using the key and cert pem encoded data
-func DigitallySign(doc *Document, node *Node, key []byte, shaAlgorithm SHAAlgorithm) error {
+func DigitallySign(doc *Document, node *Node, key []byte,
+	shaAlgorithm SHAAlgorithm, c14nAlgorithm C14NAlgorithm) error {
 	var signMethodID C.xmlSecTransformId
 	var digestMethodID C.xmlSecTransformId
 	switch shaAlgorithm {
@@ -56,9 +64,18 @@ func DigitallySign(doc *Document, node *Node, key []byte, shaAlgorithm SHAAlgori
 		digestMethodID = C.xmlSecTransformSha512Id
 	}
 
+	var c14nAlgorithm C.xmlSecTransformId
+	switch c14nAlgorithm {
+	case C14NExclusive:
+		c14nAlgorithm = xmlSecTransformExclC14NWithCommentsId
+	case C14NExclusiveWithComments:
+		c14nAlgorithm = xmlSecTransformExclC14NId
+	}
+
 	keyPtr := unsafe.Pointer(&key[0])
 	keyLen := (C.size_t)(len(key))
-	res := C.xmlSign(doc.Ptr, node.Ptr, keyPtr, keyLen, signMethodID, digestMethodID)
+	res := C.xmlSign(doc.Ptr, node.Ptr, keyPtr, keyLen, signMethodID,
+		digestMethodID, c14nAlgorithm)
 	if int(res) != 0 {
 		return errors.New("error digitally signing xml")
 	}
