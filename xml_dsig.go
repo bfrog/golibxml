@@ -44,38 +44,38 @@ const (
 // DigitallySign a node in a document using the key and cert pem encoded data
 func DigitallySign(doc *Document, node *Node, key []byte,
 	shaAlgorithm SHAAlgorithm, c14nAlgorithm C14NAlgorithm) error {
-	var signMethodID C.xmlSecTransformId
-	var digestMethodID C.xmlSecTransformId
+	var signAlgorithm C.xmlShaAlgorithm
+	var digestAlgorithm C.xmlShaAlgorithm
 	switch shaAlgorithm {
 	case SHA1Algorithm:
-		signMethodID = C.xmlSecTransformRsaSha1Id
-		digestMethodID = C.xmlSecTransformSha1Id
+		signAlgorithm = C.XML_SHA1
+		digestAlgorithm = C.XML_SHA1
 	case SHA224Algorithm:
-		signMethodID = C.xmlSecTransformRsaSha224Id
-		digestMethodID = C.xmlSecTransformSha224Id
+		signAlgorithm = C.XML_SHA224
+		digestAlgorithm = C.XML_SHA224
 	case SHA256Algorithm:
-		signMethodID = C.xmlSecTransformRsaSha256Id
-		digestMethodID = C.xmlSecTransformSha256Id
+		signAlgorithm = C.XML_SHA256
+		digestAlgorithm = C.XML_SHA256
 	case SHA384Algorithm:
-		signMethodID = C.xmlSecTransformRsaSha384Id
-		digestMethodID = C.xmlSecTransformSha384Id
+		signAlgorithm = C.XML_SHA384
+		digestAlgorithm = C.XML_SHA384
 	case SHA512Algorithm:
-		signMethodID = C.xmlSecTransformRsaSha512Id
-		digestMethodID = C.xmlSecTransformSha512Id
+		signAlgorithm = C.XML_SHA512
+		digestAlgorithm = C.XML_SHA512
 	}
 
-	var c14nAlgorithm C.xmlSecTransformId
+	var c14nTransform C.xmlC14nAlgorithm
 	switch c14nAlgorithm {
 	case C14NExclusive:
-		c14nAlgorithm = xmlSecTransformExclC14NWithCommentsId
+		c14nTransform = C.XML_C14N_EXCLUSIVE
 	case C14NExclusiveWithComments:
-		c14nAlgorithm = xmlSecTransformExclC14NId
+		c14nTransform = C.XML_C14N_EXCLUSIVE_WITH_COMMENTS
 	}
 
 	keyPtr := unsafe.Pointer(&key[0])
 	keyLen := (C.size_t)(len(key))
-	res := C.xmlSign(doc.Ptr, node.Ptr, keyPtr, keyLen, signMethodID,
-		digestMethodID, c14nAlgorithm)
+	res := C.xmlSign(doc.Ptr, node.Ptr, keyPtr, keyLen, signAlgorithm,
+		digestAlgorithm, c14nTransform)
 	if int(res) != 0 {
 		return errors.New("error digitally signing xml")
 	}
