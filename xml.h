@@ -15,6 +15,19 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
+typedef enum {
+    XML_SHA1,
+    XML_SHA224,
+    XML_SHA256,
+    XML_SHA384,
+    XML_SHA512
+} xmlShaAlgorithm;
+
+typedef enum {
+    XML_C14N_EXCLUSIVE,
+    XML_C14N_EXCLUSIVE_WITH_COMMENTS
+} xmlC14nAlgorithm;
+
 // initialize the xml and cryptographic libraries
 int init();
 
@@ -36,7 +49,9 @@ int xmlEncode(void *ctx, xmlNodePtr node, char* encoding, int options);
 xmlDocPtr xmlDecode(void *ctx, char *encoding, int options);
 
 // sign a node in an xml tree with a key and cert (pem encoded)
-int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen);
+int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen,
+        xmlShaAlgorithm signMethodId, xmlShaAlgorithm digestMethodId,
+        xmlC14nAlgorithm transformMethodId);
 
 // verify a signed node in an xml tree with a known key
 int xmlVerify(xmlNodePtr node, void* key, size_t keyLen);

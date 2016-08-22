@@ -1,5 +1,9 @@
 #include "xml.h"
 	
+xmlSecTransformId xmlShaAlgorithmToRsaTransformId(xmlShaAlgorithm algorithm);
+xmlSecTransformId xmlShaAlgorithmToTransformId(xmlShaAlgorithm algorithm);
+xmlSecTransformId xmlC14nAlgorithmToTransformId(xmlShaAlgorithm algorithm);
+
 int init()
 {
     /* Init libxml and libxslt libraries */
@@ -111,7 +115,10 @@ void xmlEnsureID(xmlNodePtr node, xmlChar* name, xmlChar** id) {
     }
 }
 
-int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
+int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen,
+        xmlShaAlgorithm signMethodAlgorithm,
+        xmlShaAlgorithm digestMethodAlgorithm,
+        xmlC14nAlgorithm transformAlgorithm)
 {
     size_t id_len = 0;
     size_t uri_len = 0;
@@ -123,10 +130,13 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
     xmlChar* uri = NULL; 
     xmlSecDSigCtxPtr dsigCtx = NULL;
     int res = -1;
+    xmlSecTransformId signMethodId = xmlShaAlgorithmToRsaTransformId(signMethodAlgorithm);
+    xmlSecTransformId digestMethodId = xmlShaAlgorithmToTransformId(digestMethodAlgorithm);
+    xmlSecTransformId transformId = xmlC14nAlgorithmToTransformId(transformAlgorithm);
 
     /* create signature template for RSA-SHA256 enveloped signature */
-    signNode = xmlSecTmplSignatureCreateNsPref(doc, xmlSecTransformExclC14NWithCommentsId,
-            xmlSecTransformRsaSha256Id, NULL, "ds");
+    signNode = xmlSecTmplSignatureCreateNsPref(doc, transformId,
+            signMethodId, NULL, "ds");
     if(signNode == NULL) {
         fprintf(stderr, "Error: failed to create signature template\n");
         goto done;              
@@ -143,7 +153,7 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen)
 
     
     /* add reference */
-    refNode = xmlSecTmplSignatureAddReference(signNode, xmlSecTransformSha256Id,
+    refNode = xmlSecTmplSignatureAddReference(signNode, digestMethodId,
             NULL, uri, NULL);
     if(refNode == NULL) {
         fprintf(stderr, "Error: failed to add reference to signature template\n");
@@ -318,4 +328,36 @@ done:
     }
 
     return(res);
+}
+
+xmlSecTransformId xmlShaAlgorithmToRsaTransformId(xmlShaAlgorithm algorithm) {
+    switch (algorithm) {
+        case XML_SHA1: return xmlSecTransformRsaSha1Id;
+        case XML_SHA224: return xmlSecTransformRsaSha224Id;
+        case XML_SHA256: return xmlSecTransformRsaSha256Id;
+        case XML_SHA384: return xmlSecTransformRsaSha384Id;
+        case XML_SHA512: return xmlSecTransformRsaSha512Id;
+        default: return xmlSecTransformRsaSha256Id;
+    }
+}
+
+xmlSecTransformId xmlShaAlgorithmToTransformId(xmlShaAlgorithm algorithm) {
+    switch (algorithm) {
+        case XML_SHA1: return xmlSecTransformSha1Id;
+        case XML_SHA224: return xmlSecTransformSha224Id;
+        case XML_SHA256: return xmlSecTransformSha256Id;
+        case XML_SHA384: return xmlSecTransformSha384Id;
+        case XML_SHA512: return xmlSecTransformSha512Id;
+        default: return xmlSecTransformSha256Id;
+    }
+}
+
+xmlSecTransformId xmlC14nAlgorithmToTransformId(xmlShaAlgorithm algorithm) {
+    switch (algorithm) {
+        case XML_C14N_EXCLUSIVE:
+            return xmlSecTransformExclC14NId;
+        case XML_C14N_EXCLUSIVE_WITH_COMMENTS:
+        default:
+            return xmlSecTransformExclC14NWithCommentsId;
+    }
 }

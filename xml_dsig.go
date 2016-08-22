@@ -23,11 +23,63 @@ type DigitalSignature struct {
 }
 */
 
+type SHAAlgorithm int
+
+const (
+	SHA0Algorithm SHAAlgorithm = iota
+	SHA1Algorithm
+	SHA224Algorithm
+	SHA256Algorithm
+	SHA384Algorithm
+	SHA512Algorithm
+)
+
+type C14NAlgorithm int
+
+const (
+	C14NExclusive C14NAlgorithm = iota
+	C14NExclusiveWithComments
+)
+
 // DigitallySign a node in a document using the key and cert pem encoded data
-func DigitallySign(doc *Document, node *Node, key []byte) error {
+func DigitallySign(doc *Document, node *Node, key []byte,
+	shaAlgorithm SHAAlgorithm, c14nAlgorithm C14NAlgorithm) error {
+	var signAlgorithm C.xmlShaAlgorithm
+	var digestAlgorithm C.xmlShaAlgorithm
+	switch shaAlgorithm {
+	case SHA1Algorithm:
+		signAlgorithm = C.XML_SHA1
+		digestAlgorithm = C.XML_SHA1
+	case SHA224Algorithm:
+		signAlgorithm = C.XML_SHA224
+		digestAlgorithm = C.XML_SHA224
+	case SHA256Algorithm:
+		signAlgorithm = C.XML_SHA256
+		digestAlgorithm = C.XML_SHA256
+	case SHA384Algorithm:
+		signAlgorithm = C.XML_SHA384
+		digestAlgorithm = C.XML_SHA384
+	case SHA512Algorithm:
+		signAlgorithm = C.XML_SHA512
+		digestAlgorithm = C.XML_SHA512
+	default:
+		return errors.New("unknown/unsupported SHA algorithm for signing")
+	}
+
+	var c14nTransform C.xmlC14nAlgorithm
+	switch c14nAlgorithm {
+	case C14NExclusive:
+		c14nTransform = C.XML_C14N_EXCLUSIVE
+	case C14NExclusiveWithComments:
+		c14nTransform = C.XML_C14N_EXCLUSIVE_WITH_COMMENTS
+	default:
+		return errors.New("unknown/unsupported C14N algorithm")
+	}
+
 	keyPtr := unsafe.Pointer(&key[0])
 	keyLen := (C.size_t)(len(key))
-	res := C.xmlSign(doc.Ptr, node.Ptr, keyPtr, keyLen)
+	res := C.xmlSign(doc.Ptr, node.Ptr, keyPtr, keyLen, signAlgorithm,
+		digestAlgorithm, c14nTransform)
 	if int(res) != 0 {
 		return errors.New("error digitally signing xml")
 	}
