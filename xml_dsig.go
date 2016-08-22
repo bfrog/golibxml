@@ -62,6 +62,8 @@ func DigitallySign(doc *Document, node *Node, key []byte,
 	case SHA512Algorithm:
 		signAlgorithm = C.XML_SHA512
 		digestAlgorithm = C.XML_SHA512
+	default:
+		return errors.New("unknown/unsupported SHA algorithm for signing")
 	}
 
 	var c14nTransform C.xmlC14nAlgorithm
@@ -70,6 +72,8 @@ func DigitallySign(doc *Document, node *Node, key []byte,
 		c14nTransform = C.XML_C14N_EXCLUSIVE
 	case C14NExclusiveWithComments:
 		c14nTransform = C.XML_C14N_EXCLUSIVE_WITH_COMMENTS
+	default:
+		return errors.New("unknown/unsupported C14N algorithm")
 	}
 
 	keyPtr := unsafe.Pointer(&key[0])
