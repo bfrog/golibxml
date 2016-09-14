@@ -167,7 +167,7 @@ int xmlSign(xmlDocPtr doc, xmlNodePtr node, void *key, size_t keyLen,
     }
 
     /* add c14n transform */
-    if(xmlSecTmplReferenceAddTransform(refNode, xmlSecTransformExclC14NWithCommentsId) == NULL) {
+    if(xmlSecTmplReferenceAddTransform(refNode, transformId) == NULL) {
         fprintf(stderr, "Error: failed to add c14n-excl transform to reference\n");
         goto done;              
     }
