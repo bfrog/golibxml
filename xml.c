@@ -235,7 +235,7 @@ int xmlDecrypt(xmlNodePtr node, void* keyData, size_t keyLen) {
      * for destroying key 
      */
     if(xmlSecCryptoAppDefaultKeysMngrAdoptKey(mngr, key) < 0) {
-        fprintf(stderr,"Error: failed to add key from \"%s\" to keys manager\n");
+        fprintf(stderr,"Error: failed to add key to keys manager\n");
         xmlSecKeyDestroy(key);
         xmlSecKeysMngrDestroy(mngr);
         return -1;
